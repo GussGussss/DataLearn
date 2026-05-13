@@ -707,13 +707,23 @@ body {
 .password-rules li.valid { color: var(--text); }
 .password-rules li.valid .rule-icon { color: var(--accent3); }
 
-/* Video responsivo */
+/* Video responsivo y centrado */
 .video-container {
-  position: relative; width: 100%; padding-bottom: 56.25%;
-  height: 0; border-radius: 12px; overflow: hidden; margin-bottom: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid var(--border);
+  width: 100%;
+  max-width: 800px; /* Tope maximo: no crecera mas de 800 pixeles */
+  margin: 0 auto 24px auto; /* Lo centra horizontalmente en la pantalla */
+  aspect-ratio: 16 / 9; /* Magia moderna: mantiene la proporcion HD perfecta */
+  border-radius: 12px; 
+  overflow: hidden; 
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+  border: 1px solid var(--border);
 }
-.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+.video-container iframe { 
+  width: 100%; 
+  height: 100%; 
+  border: none; /* Asegura que no haya bordes dobles feos */
+}
 
 /* ── CONSOLA DINÁMICA (CON MÁS AIRE) ── */
 .terminal-output {
