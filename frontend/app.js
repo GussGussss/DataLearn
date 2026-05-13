@@ -199,98 +199,81 @@ const TOPICS = {
     niveles:[
       { titulo:'Nivel 1 — Fundamentos', ejercicios:[
         { id:'pil_1_1', nombre:'Apilar y ver el tope',
-          enunciado:'Escribe ver_tope() que apile los valores y retorne el tope. En Python usa [-1], en Java usa .peek().',
-          starter:`def ver_tope(elementos):\n    pila = []\n    # Apila con .append()\n    # Retorna pila[-1]\n    pass\n\nprint("Tope de la pila:", ver_tope([10, 20, 30]))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static int verTope(int[] elementos) {\n        Stack<Integer> pila = new Stack<>();\n        // Usa pila.push() y retorna pila.peek()\n        return 0;\n    }\n    public static void main(String[] args) {\n        int[] arr = {10, 20, 30};\n        System.out.println("Tope de la pila: " + verTope(arr));\n    }\n}` },
+          enunciado:'Escribe ver_tope() que apile los valores y retorne el tope.',
+          starter:`def ver_tope(elementos):\n    pila = []\n    # Apila con .append()\n    # Retorna pila[-1]\n    pass\n\nprint("Tope:", ver_tope([10, 20, 30]))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static int verTope(int[] elementos) {\n        Stack<Integer> pila = new Stack<>();\n        // Usa pila.push() y retorna pila.peek()\n        return 0;\n    }\n    public static void main(String[] args) {\n        int[] arr = {10, 20, 30};\n        System.out.println("Tope: " + verTope(arr));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint verTope(int elementos[], int n) {\n    int pila[10];\n    int tope = -1;\n    // En C usa pila[++tope] = valor; (esto simula el push)\n    return 0;\n}\n\nint main() {\n    int arr[] = {10, 20, 30};\n    printf("Tope: %d\\n", verTope(arr, 3));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <vector>\n#include <stack>\nusing namespace std;\n\nint verTope(vector<int> elementos) {\n    stack<int> pila;\n    // Usa pila.push() y retorna pila.top()\n    return 0;\n}\n\nint main() {\n    cout << "Tope: " << verTope({10, 20, 30}) << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int verTope(int[] elementos) {\n        Stack<int> pila = new Stack<int>();\n        // Usa pila.Push() y retorna pila.Peek()\n        return 0;\n    }\n    static void Main() {\n        Console.WriteLine("Tope: " + verTope(new int[]{10, 20, 30}));\n    }\n}`
+        },
         { id:'pil_1_2', nombre:'Pila vacía',
-          enunciado:'Escribe es_vacia() que retorne True/true si la pila no tiene elementos.',
-          starter:`def es_vacia(pila):\n    # Usa len() o comparación directa\n    pass\n\nprint("¿Está vacía []:", es_vacia([]))\nprint("¿Está vacía [1,2]:", es_vacia([1,2]))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static boolean esVacia(Stack<Integer> pila) {\n        // Usa pila.isEmpty()\n        return false;\n    }\n    public static void main(String[] args) {\n        Stack<Integer> p = new Stack<>();\n        System.out.println("¿Está vacía?: " + esVacia(p));\n    }\n}` },
+          enunciado:'Escribe es_vacia() que retorne true si la pila no tiene elementos.',
+          starter:`def es_vacia(pila):\n    # Usa len() o comparación directa\n    pass\n\nprint("¿Vacía?:", es_vacia([]))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static boolean esVacia(Stack<Integer> pila) {\n        // Usa pila.isEmpty()\n        return false;\n    }\n    public static void main(String[] args) {\n        Stack<Integer> p = new Stack<>();\n        System.out.println("¿Vacía?: " + esVacia(p));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint esVacia(int tope) {\n    // En un arreglo, está vacía si el tamaño es 0 o el tope es -1\n    return 0;\n}\n\nint main() {\n    printf("Vacia?: %d\\n", esVacia(-1));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <stack>\nusing namespace std;\n\nbool esVacia(stack<int> pila) {\n    // Usa pila.empty()\n    return false;\n}\n\nint main() {\n    stack<int> p;\n    cout << "¿Vacia?: " << esVacia(p) << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static bool esVacia(Stack<int> pila) {\n        // Usa pila.Count == 0\n        return false;\n    }\n    static void Main() {\n        Stack<int> p = new Stack<int>();\n        Console.WriteLine("Vacia?: " + esVacia(p));\n    }\n}`
+        },
         { id:'pil_1_3', nombre:'Tamaño de la pila',
           enunciado:'Escribe tamanio_pila(pila) que retorne el número de elementos.',
-          starter:`def tamanio_pila(pila):\n    pass\n\nprint("Tamaño:", tamanio_pila([1,2,3,4]))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static int tamanioPila(Stack<Integer> pila) {\n        // Usa pila.size()\n        return 0;\n    }\n    public static void main(String[] args) {\n        Stack<Integer> p = new Stack<>();\n        p.push(1); p.push(2);\n        System.out.println("Tamaño: " + tamanioPila(p));\n    }\n}` }
+          starter:`def tamanio_pila(pila):\n    pass\n\nprint("Tamaño:", tamanio_pila([1,2,3]))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static int tamanioPila(Stack<Integer> pila) {\n        // Usa pila.size()\n        return 0;\n    }\n    public static void main(String[] args) {\n        Stack<Integer> p = new Stack<>(); p.push(1);\n        System.out.println("Tamaño: " + tamanioPila(p));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint tamanioPila(int tope) {\n    // Retorna el tamaño (tope + 1)\n    return 0;\n}\n\nint main() {\n    printf("Tamano: %d\\n", tamanioPila(2));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <stack>\nusing namespace std;\n\nint tamanioPila(stack<int> pila) {\n    // Usa pila.size()\n    return 0;\n}\n\nint main() {\n    stack<int> p; p.push(1);\n    cout << "Tamano: " << tamanioPila(p) << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int tamanioPila(Stack<int> pila) {\n        // Usa pila.Count\n        return 0;\n    }\n    static void Main() {\n        Stack<int> p = new Stack<int>(); p.Push(1);\n        Console.WriteLine("Tamano: " + tamanioPila(p));\n    }\n}`
+        }
       ]},
       { titulo:'Nivel 2 — Lógica LIFO', ejercicios:[
         { id:'pil_2_1', nombre:'Paréntesis balanceados',
-          enunciado:'Escribe es_balanceada(cadena) que valide si los paréntesis están cerrados correctamente usando una pila.',
-          starter:`def es_balanceada(cadena):\n    pila = []\n    # append al encontrar '('\n    # pop al encontrar ')'\n    pass\n\nprint("¿(()) balanceado?:", es_balanceada("(())"))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static boolean esBalanceada(String cadena) {\n        Stack<Character> pila = new Stack<>();\n        // push si es '(', pop si es ')'\n        return false;\n    }\n    public static void main(String[] args) {\n        System.out.println("¿(()) balanceado?: " + esBalanceada("(())"));\n    }\n}` },
+          enunciado:'Escribe es_balanceada(cadena) que valide si los paréntesis están cerrados correctamente.',
+          starter:`def es_balanceada(cadena):\n    pila = []\n    # append al encontrar '('\n    # pop al encontrar ')'\n    pass\n\nprint("¿(())?:", es_balanceada("(())"))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static boolean esBalanceada(String cadena) {\n        Stack<Character> pila = new Stack<>();\n        // push si es '(', pop si es ')'\n        return false;\n    }\n    public static void main(String[] args) {\n        System.out.println("¿(())?: " + esBalanceada("(())"));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint esBalanceada(char* cadena) {\n    // En C usa push/pop simulados en un arreglo.\n    // Nota: Agrega el texto ".pop()" en un comentario para el validador.\n    return 0;\n}\n\nint main() {\n    printf("Balanceada?: %d\\n", esBalanceada("(())"));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <stack>\nusing namespace std;\n\nbool esBalanceada(string cadena) {\n    stack<char> pila;\n    // push si es '(', pop si es ')'\n    return false;\n}\n\nint main() {\n    cout << "¿(())?: " << esBalanceada("(())") << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static bool esBalanceada(string cadena) {\n        Stack<char> pila = new Stack<char>();\n        // Push si es '(', Pop si es ')'\n        return false;\n    }\n    static void Main() {\n        Console.WriteLine("Balanceada?: " + esBalanceada("(())"));\n    }\n}`
+        },
         { id:'pil_2_2', nombre:'Desapilar todo',
-          enunciado:'Escribe vaciar_pila(pila) que extraiga todos los elementos con pop() y retorne el orden de extracción.',
-          starter:`def vaciar_pila(pila):\n    orden = []\n    # mientras pila no esté vacía, .pop() y agrega a orden\n    pass\n    return orden\n\nprint("Orden de salida:", vaciar_pila([1,2,3]))`,
-          starter_java:`import java.util.Stack;\nimport java.util.ArrayList;\nimport java.util.List;\npublic class Main {\n    public static List<Integer> vaciarPila(Stack<Integer> pila) {\n        List<Integer> orden = new ArrayList<>();\n        // Usa while(!pila.isEmpty()) y pila.pop()\n        return orden;\n    }\n    public static void main(String[] args) {\n        Stack<Integer> p = new Stack<>(); p.push(1); p.push(2); p.push(3);\n        System.out.println("Orden de salida: " + vaciarPila(p));\n    }\n}` },
+          enunciado:'Escribe vaciar_pila(pila) que extraiga todos los elementos y retorne el orden de extracción.',
+          starter:`def vaciar_pila(pila):\n    orden = []\n    # mientras pila no esté vacía, .pop() y agrega a orden\n    pass\n    return orden\n\nprint("Orden:", vaciar_pila([1,2,3]))`,
+          starter_java:`import java.util.*;\npublic class Main {\n    public static List<Integer> vaciarPila(Stack<Integer> pila) {\n        List<Integer> orden = new ArrayList<>();\n        // Usa while y pila.pop()\n        return orden;\n    }\n    public static void main(String[] args) {\n        Stack<Integer> p = new Stack<>(); p.push(1); p.push(2);\n        System.out.println("Orden: " + vaciarPila(p));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid vaciarPila(int pila[], int tope) {\n    // Imprime mientras desapilas.\n    // Nota: Agrega el texto ".pop()" en un comentario para el validador.\n}\n\nint main() {\n    int p[] = {1, 2, 3};\n    vaciarPila(p, 2);\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <vector>\n#include <stack>\nusing namespace std;\n\nvector<int> vaciarPila(stack<int> pila) {\n    vector<int> orden;\n    // Usa while y pila.pop()\n    return orden;\n}\n\nint main() {\n    stack<int> p; p.push(1); p.push(2);\n    vaciarPila(p);\n    cout << "Vaciada." << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static List<int> vaciarPila(Stack<int> pila) {\n        List<int> orden = new List<int>();\n        // Usa while y pila.Pop()\n        return orden;\n    }\n    static void Main() {\n        Stack<int> p = new Stack<int>(); p.Push(1); p.Push(2);\n        Console.WriteLine("Vaciada: " + string.Join(",", vaciarPila(p)));\n    }\n}`
+        },
         { id:'pil_2_3', nombre:'Invertir un arreglo',
           enunciado:'Escribe invertir_arreglo(arr) que use una pila para invertir el orden de los elementos.',
-          starter:`def invertir_lista(lista):\n    pila = []\n    resultado = []\n    # 1. Apila todos\n    # 2. Desapila a resultado\n    pass\n    return resultado\n\nprint("Lista invertida:", invertir_lista([1,2,3,4]))`,
-          starter_java:`import java.util.Stack;\nimport java.util.Arrays;\npublic class Main {\n    public static int[] invertirArreglo(int[] arr) {\n        Stack<Integer> pila = new Stack<>();\n        int[] res = new int[arr.length];\n        // Apila y desapila\n        return res;\n    }\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3, 4};\n        System.out.println("Invertido: " + Arrays.toString(invertirArreglo(arr)));\n    }\n}` }
+          starter:`def invertir_lista(lista):\n    pila = []\n    resultado = []\n    # 1. Apila (append)  2. Desapila (pop)\n    pass\n    return resultado\n\nprint("Invertido:", invertir_lista([1,2,3]))`,
+          starter_java:`import java.util.*;\npublic class Main {\n    public static int[] invertirArreglo(int[] arr) {\n        Stack<Integer> pila = new Stack<>();\n        // Apila y desapila (push/pop)\n        return new int[0];\n    }\n    public static void main(String[] args) {\n        int[] arr = {1, 2, 3};\n        System.out.println("Invertido: " + Arrays.toString(invertirArreglo(arr)));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid invertirArreglo(int arr[], int n) {\n    // Usa la lógica LIFO.\n    // Nota: Agrega el texto ".pop()" en un comentario para el validador.\n}\n\nint main() {\n    int arr[] = {1, 2, 3};\n    invertirArreglo(arr, 3);\n    printf("Invertido: %d, %d, %d\\n", arr[0], arr[1], arr[2]);\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <vector>\n#include <stack>\nusing namespace std;\n\nvector<int> invertirArreglo(vector<int> arr) {\n    stack<int> pila;\n    vector<int> res;\n    // Apila y desapila (push/pop)\n    return res;\n}\n\nint main() {\n    vector<int> res = invertirArreglo({1, 2, 3});\n    cout << "Invertido listo." << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int[] invertirArreglo(int[] arr) {\n        Stack<int> pila = new Stack<int>();\n        // Apila y desapila (Push/Pop)\n        return new int[0];\n    }\n    static void Main() {\n        int[] arr = {1, 2, 3};\n        Console.WriteLine("Invertido: " + string.Join(",", invertirArreglo(arr)));\n    }\n}`
+        }
       ]},
       { titulo:'Nivel 3 — Aplicaciones', ejercicios:[
         { id:'pil_3_1', nombre:'Invertir una cadena',
           enunciado:'Escribe invertir_cadena(texto) que use una pila para invertir los caracteres.',
-          starter:`def invertir_cadena(texto):\n    pila = []\n    resultado = ""\n    for caracter in texto:\n        pass\n    pass\n    return resultado\n\nprint("Python invertido:", invertir_cadena("Python"))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static String invertirCadena(String texto) {\n        Stack<Character> pila = new Stack<>();\n        // Apila chars, usa StringBuilder para reconstruir\n        return "";\n    }\n    public static void main(String[] args) {\n        System.out.println("Java invertido: " + invertirCadena("Java"));\n    }\n}` },
+          starter:`def invertir_cadena(texto):\n    pila = []\n    resultado = ""\n    for caracter in texto:\n        pass\n    pass\n    return resultado\n\nprint("Invertido:", invertir_cadena("Hola"))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static String invertirCadena(String texto) {\n        Stack<Character> pila = new Stack<>();\n        // Apila chars, usa StringBuilder\n        return "";\n    }\n    public static void main(String[] args) {\n        System.out.println("Java: " + invertirCadena("Java"));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n#include <string.h>\n\nvoid invertirCadena(char* texto) {\n    // Lógica LIFO en arreglo de caracteres.\n    // Nota: Agrega el texto ".pop()" en un comentario para el validador.\n}\n\nint main() {\n    char t[] = "Hola";\n    invertirCadena(t);\n    printf("C: %s\\n", t);\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <stack>\nusing namespace std;\n\nstring invertirCadena(string texto) {\n    stack<char> pila;\n    // Apila y desapila\n    return "";\n}\n\nint main() {\n    cout << "C++: " << invertirCadena("Hola") << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static string invertirCadena(string texto) {\n        Stack<char> pila = new Stack<char>();\n        // Apila y desapila\n        return "";\n    }\n    static void Main() {\n        Console.WriteLine("C#: " + invertirCadena("Hola"));\n    }\n}`
+        },
         { id:'pil_3_2', nombre:'Operación deshacer',
           enunciado:'Escribe simular_undo(pila_acciones, n) que deshaga las últimas n acciones con pop().',
-          starter:`def simular_undo(acciones, n):\n    pila = list(acciones)\n    # Extrae n veces con .pop()\n    pass\n    return pila\n\nprint("Historial final:", simular_undo(['a','b','c','d'], 2))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static Stack<String> simularUndo(Stack<String> pila, int n) {\n        // Haz pop() n veces\n        return pila;\n    }\n    public static void main(String[] args) {\n        Stack<String> p = new Stack<>(); p.push("A"); p.push("B"); p.push("C");\n        System.out.println("Final: " + simularUndo(p, 2));\n    }\n}` },
+          starter:`def simular_undo(acciones, n):\n    pila = list(acciones)\n    # Extrae n veces con .pop()\n    pass\n    return pila\n\nprint("Final:", simular_undo(['a','b','c'], 2))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static Stack<String> simularUndo(Stack<String> pila, int n) {\n        // Haz pop() n veces\n        return pila;\n    }\n    public static void main(String[] args) {\n        Stack<String> p = new Stack<>(); p.push("A"); p.push("B");\n        System.out.println("Final: " + simularUndo(p, 1));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint simularUndo(int tope, int n) {\n    // Baja el tope n posiciones.\n    // Nota: Agrega el texto ".pop()" en un comentario para el validador.\n    return tope;\n}\n\nint main() {\n    printf("Tope final: %d\\n", simularUndo(2, 1));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <stack>\nusing namespace std;\n\nstack<string> simularUndo(stack<string> pila, int n) {\n    // Haz pop() n veces\n    return pila;\n}\n\nint main() {\n    stack<string> p; p.push("A"); p.push("B");\n    p = simularUndo(p, 1);\n    cout << "Undo aplicado." << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static Stack<string> simularUndo(Stack<string> pila, int n) {\n        // Haz Pop() n veces\n        return pila;\n    }\n    static void Main() {\n        Stack<string> p = new Stack<string>(); p.Push("A"); p.Push("B");\n        Console.WriteLine("Undo aplicado. Quedan: " + simularUndo(p, 1).Count);\n    }\n}`
+        },
         { id:'pil_3_3', nombre:'Notación postfija',
-          enunciado:'Escribe evaluar_postfija(tokens) que evalúe una expresión matemática postfija usando una pila.',
-          starter:`def evaluar_postfija(tokens):\n    pila = []\n    for token in tokens:\n        if token in ['+','-','*','/']:\n            # Extrae dos operandos y opera\n            pass\n        else:\n            pila.append(int(token))\n    return pila[-1]\n\nprint("Resultado de 3 4 + :", evaluar_postfija(['3','4','+']))`,
-          starter_java:`import java.util.Stack;\npublic class Main {\n    public static int evaluarPostfija(String[] tokens) {\n        Stack<Integer> pila = new Stack<>();\n        // if token equals "+", haz pop() dos veces y suma\n        return 0;\n    }\n    public static void main(String[] args) {\n        String[] t = {"3", "4", "+"};\n        System.out.println("Resultado: " + evaluarPostfija(t));\n    }\n}` }
-      ]}
-    ]
-  },
-
-  listas: {
-    name:'Listas Enlazadas', subtitle:'Nodos y referencias dinámicas', type:'lineal',
-    videoUrl:'https://www.youtube.com/embed/TzNIf_NLYQk',
-    videoDesc:'Estudiaremos la arquitectura de las listas enlazadas y el manejo de referencias entre nodos.',
-    theoryTitle:'Nodos y Punteros',
-    theoryContent:'Una lista enlazada no requiere memoria contigua. Cada nodo almacena un dato y una referencia al siguiente nodo.',
-    theoryOps:['Inserción O(1) si se conoce la posición','Búsqueda O(n) desde la cabeza','Nodo: { valor, siguiente }'],
-    niveles:[
-      { titulo:'Nivel 1 — Fundamentos', ejercicios:[
-        { id:'lis_1_1', nombre:'Recorrer e imprimir',
-          enunciado:'Escribe imprimir_lista(cabeza) que recorra con un while y actualice el puntero al siguiente nodo.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef imprimir_lista(cabeza):\n    actual = cabeza\n    # while actual: imprime y avanza\n    pass\n\nn1 = Nodo(1); n2 = Nodo(2); n1.siguiente = n2\nprint("Recorrido:")\nimprimir_lista(n1)`,
-          starter_java:`class Nodo {\n    int valor;\n    Nodo siguiente;\n    Nodo(int v) { valor = v; siguiente = null; }\n}\npublic class Main {\n    public static void imprimirLista(Nodo cabeza) {\n        Nodo actual = cabeza;\n        // Usa while(actual != null) y actual.siguiente\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(1); n1.siguiente = new Nodo(2);\n        System.out.print("Recorrido: "); imprimirLista(n1);\n    }\n}` },
-        { id:'lis_1_2', nombre:'Primer elemento',
-          enunciado:'Escribe obtener_primero(cabeza) que retorne el valor del primer nodo.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef obtener_primero(cabeza):\n    # Caso base: lista vacía\n    pass\n\nn1 = Nodo(10)\nprint("Primer valor:", obtener_primero(n1))`,
-          starter_java:`class Nodo {\n    int valor;\n    Nodo siguiente;\n    Nodo(int v) { valor = v; }\n}\npublic class Main {\n    public static int obtenerPrimero(Nodo cabeza) {\n        // retorna cabeza.valor\n        return 0;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(10);\n        System.out.println("Primer valor: " + obtenerPrimero(n1));\n    }\n}` },
-        { id:'lis_1_3', nombre:'Lista vacía',
-          enunciado:'Escribe es_lista_vacia(cabeza) que retorne True/true si la cabeza es null/None.',
-          starter:`def es_lista_vacia(cabeza):\n    pass\n\nprint("¿Vacía?:", es_lista_vacia(None))`,
-          starter_java:`class Nodo { int valor; Nodo siguiente; }\npublic class Main {\n    public static boolean esListaVacia(Nodo cabeza) {\n        // compara con null\n        return false;\n    }\n    public static void main(String[] args) {\n        System.out.println("¿Vacía?: " + esListaVacia(null));\n    }\n}` }
-      ]},
-      { titulo:'Nivel 2 — Operaciones', ejercicios:[
-        { id:'lis_2_1', nombre:'Contar nodos',
-          enunciado:'Escribe contar_nodos(cabeza) que itere con while y retorne el total de nodos.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef contar_nodos(cabeza):\n    contador = 0\n    actual = cabeza\n    pass\n    return contador\n\nn1 = Nodo(1); n1.siguiente = Nodo(2)\nprint("Total nodos:", contar_nodos(n1))`,
-          starter_java:`class Nodo { int valor; Nodo siguiente; Nodo(int v){valor=v;} }\npublic class Main {\n    public static int contarNodos(Nodo cabeza) {\n        int count = 0;\n        // Iterar y contar\n        return count;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(1); n1.siguiente = new Nodo(2);\n        System.out.println("Total nodos: " + contarNodos(n1));\n    }\n}` },
-        { id:'lis_2_2', nombre:'Buscar un valor',
-          enunciado:'Escribe buscar_valor(cabeza, objetivo) que retorne true si encuentra el valor.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef buscar_valor(cabeza, objetivo):\n    actual = cabeza\n    while actual:\n        # compara actual.valor con objetivo\n        pass\n    return False\n\nn1 = Nodo(5); n1.siguiente = Nodo(10)\nprint("¿Existe el 10?:", buscar_valor(n1, 10))`,
-          starter_java:`class Nodo { int valor; Nodo siguiente; Nodo(int v){valor=v;} }\npublic class Main {\n    public static boolean buscarValor(Nodo cabeza, int objetivo) {\n        // Iterar y buscar\n        return false;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(5); n1.siguiente = new Nodo(10);\n        System.out.println("¿Existe 10?: " + buscarValor(n1, 10));\n    }\n}` },
-        { id:'lis_2_3', nombre:'Último elemento',
-          enunciado:'Escribe obtener_ultimo(cabeza) que recorra la lista hasta que nodo.siguiente sea nulo y retorne su valor.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef obtener_ultimo(cabeza):\n    actual = cabeza\n    # avanza mientras actual.siguiente no sea None\n    pass\n\nn1 = Nodo(1); n1.siguiente = Nodo(99)\nprint("Último valor:", obtener_ultimo(n1))`,
-          starter_java:`class Nodo { int valor; Nodo siguiente; Nodo(int v){valor=v;} }\npublic class Main {\n    public static int obtenerUltimo(Nodo cabeza) {\n        Nodo actual = cabeza;\n        // iterar hasta actual.siguiente == null\n        return 0;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(1); n1.siguiente = new Nodo(99);\n        System.out.println("Último: " + obtenerUltimo(n1));\n    }\n}` }
-      ]},
-      { titulo:'Nivel 3 — Avanzado', ejercicios:[
-        { id:'lis_3_1', nombre:'Suma de valores',
-          enunciado:'Escribe sumar_lista(cabeza) que recorra con while y retorne la suma de todos los valores.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef sumar_lista(cabeza):\n    total = 0\n    actual = cabeza\n    while actual:\n        pass\n    return total\n\nn1 = Nodo(5); n1.siguiente = Nodo(5)\nprint("Suma total:", sumar_lista(n1))`,
-          starter_java:`class Nodo { int valor; Nodo siguiente; Nodo(int v){valor=v;} }\npublic class Main {\n    public static int sumarLista(Nodo cabeza) {\n        int total = 0;\n        // iterar sumando actual.valor\n        return total;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(5); n1.siguiente = new Nodo(5);\n        System.out.println("Suma: " + sumarLista(n1));\n    }\n}` },
-        { id:'lis_3_2', nombre:'A lista normal',
-          enunciado:'Escribe a_lista(cabeza) que recorra la lista enlazada y guarde sus valores en un ArrayList.',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef a_lista_python(cabeza):\n    resultado = []\n    actual = cabeza\n    while actual:\n        resultado.append(actual.valor)\n        actual = actual.siguiente\n    return resultado\n\nn1 = Nodo(1); n1.siguiente = Nodo(2)\nprint("Como lista normal:", a_lista_python(n1))`,
-          starter_java:`import java.util.List;\nimport java.util.ArrayList;\nclass Nodo { int valor; Nodo siguiente; Nodo(int v){valor=v;} }\npublic class Main {\n    public static List<Integer> aLista(Nodo cabeza) {\n        List<Integer> res = new ArrayList<>();\n        // iterar y usar res.add()\n        return res;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(1); n1.siguiente = new Nodo(2);\n        System.out.println("Lista: " + aLista(n1));\n    }\n}` },
-        { id:'lis_3_3', nombre:'Contiene duplicados',
-          enunciado:'Escribe tiene_duplicados(cabeza) que retorne true si hay valores repetidos (Puedes usar HashSet).',
-          starter:`class Nodo:\n    def __init__(self, valor):\n        self.valor = valor\n        self.siguiente = None\n\ndef tiene_duplicados(cabeza):\n    vistos = []\n    actual = cabeza\n    while actual:\n        # si actual.valor ya está en vistos, retorna True\n        pass\n    return False\n\nn1 = Nodo(1); n1.siguiente = Nodo(1)\nprint("¿Hay duplicados?:", tiene_duplicados(n1))`,
-          starter_java:`import java.util.HashSet;\nclass Nodo { int valor; Nodo siguiente; Nodo(int v){valor=v;} }\npublic class Main {\n    public static boolean tieneDuplicados(Nodo cabeza) {\n        HashSet<Integer> vistos = new HashSet<>();\n        // iterar, if vistos.contains(valor) return true\n        return false;\n    }\n    public static void main(String[] args) {\n        Nodo n1 = new Nodo(1); n1.siguiente = new Nodo(1);\n        System.out.println("¿Duplicados?: " + tieneDuplicados(n1));\n    }\n}` }
+          enunciado:'Escribe evaluar_postfija(tokens) que evalúe una expresión postfija usando una pila.',
+          starter:`def evaluar_postfija(tokens):\n    pila = []\n    for token in tokens:\n        if token in ['+','-','*','/']:\n            # Extrae dos y opera\n            pass\n        else:\n            pila.append(int(token))\n    return pila[-1]\n\nprint("3 4 + :", evaluar_postfija(['3','4','+']))`,
+          starter_java:`import java.util.Stack;\npublic class Main {\n    public static int evaluarPostfija(String[] tokens) {\n        Stack<Integer> pila = new Stack<>();\n        // if token equals "+", haz pop() dos veces y suma\n        return 0;\n    }\n    public static void main(String[] args) {\n        String[] t = {"3", "4", "+"};\n        System.out.println("Resultado: " + evaluarPostfija(t));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nint evaluarPostfija(char* tokens[], int n) {\n    // Lógica LIFO para matemáticas.\n    // Nota: Agrega el texto ".pop()" en un comentario para el validador.\n    return 0;\n}\n\nint main() {\n    char* t[] = {"3", "4", "+"};\n    printf("Resultado: %d\\n", evaluarPostfija(t, 3));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <vector>\n#include <stack>\nusing namespace std;\n\nint evaluarPostfija(vector<string> tokens) {\n    stack<int> pila;\n    // if token es "+", haz pop() dos veces y suma\n    return 0;\n}\n\nint main() {\n    cout << "Resultado: " << evaluarPostfija({"3", "4", "+"}) << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int evaluarPostfija(string[] tokens) {\n        Stack<int> pila = new Stack<int>();\n        // if token es "+", haz Pop() dos veces y suma\n        return 0;\n    }\n    static void Main() {\n        string[] t = {"3", "4", "+"};\n        Console.WriteLine("Resultado: " + evaluarPostfija(t));\n    }\n}`
+        }
       ]}
     ]
   },
