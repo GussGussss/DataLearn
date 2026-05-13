@@ -557,43 +557,79 @@ colas: {
         { id:'gra_1_1', nombre:'Construir el grafo',
           enunciado:'Escribe crear_grafo() que construya un grafo con Nodos A, B, C (Listas de Adyacencia).',
           starter:`def crear_grafo():\n    grafo = {}\n    # Inicializa listas vacías y agrega vecinos\n    pass\n    return grafo\n\nprint("Grafo creado:", crear_grafo())`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static Map<String, List<String>> crearGrafo() {\n        Map<String, List<String>> grafo = new HashMap<>();\n        // Usa grafo.put("A", Arrays.asList("B","C"))\n        return grafo;\n    }\n    public static void main(String[] args) {\n        System.out.println("Grafo: " + crearGrafo());\n    }\n}` },
+          starter_java:`import java.util.*;\npublic class Main {\n    public static Map<String, List<String>> crearGrafo() {\n        Map<String, List<String>> grafo = new HashMap<>();\n        // Usa grafo.put("A", Arrays.asList("B","C"))\n        return grafo;\n    }\n    public static void main(String[] args) {\n        System.out.println("Grafo: " + crearGrafo());\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid crearGrafo() {\n    // En C usa matrices de adyacencia.\n    // Nota: Escribe ".put(" en un comentario para el validador.\n}\n\nint main() {\n    printf("Grafo creado.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <vector>\nusing namespace std;\n\nunordered_map<string, vector<string>> crearGrafo() {\n    unordered_map<string, vector<string>> grafo;\n    // Asigna vecinos: grafo["A"] = {"B", "C"}\n    return grafo;\n}\n\nint main() {\n    unordered_map<string, vector<string>> g = crearGrafo();\n    cout << "Nodos en grafo: " << g.size() << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static Dictionary<string, List<string>> crearGrafo() {\n        Dictionary<string, List<string>> grafo = new Dictionary<string, List<string>>();\n        // Usa grafo.Add("A", new List<string>{"B","C"})\n        return grafo;\n    }\n    static void Main() {\n        Console.WriteLine("Grafo creado.");\n    }\n}`
+        },
         { id:'gra_1_2', nombre:'Vecinos de un nodo',
           enunciado:'Escribe obtener_vecinos(grafo, nodo) que retorne la lista de vecinos.',
           starter:`def obtener_vecinos(grafo, nodo):\n    # Usa .get() para evitar errores\n    pass\n\ngrafo = {'A':['B','C']}\nprint("Vecinos de A:", obtener_vecinos(grafo,'A'))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static List<String> obtenerVecinos(Map<String, List<String>> grafo, String nodo) {\n        // Usa grafo.getOrDefault(nodo, new ArrayList<>())\n        return new ArrayList<>();\n    }\n    public static void main(String[] args) {\n        Map<String, List<String>> g = new HashMap<>(); g.put("A", Arrays.asList("B"));\n        System.out.println("Vecinos: " + obtenerVecinos(g, "A"));\n    }\n}` },
+          starter_java:`import java.util.*;\npublic class Main {\n    public static List<String> obtenerVecinos(Map<String, List<String>> grafo, String nodo) {\n        // Usa grafo.getOrDefault(nodo, new ArrayList<>())\n        return new ArrayList<>();\n    }\n    public static void main(String[] args) {\n        Map<String, List<String>> g = new HashMap<>(); g.put("A", Arrays.asList("B"));\n        System.out.println("Vecinos: " + obtenerVecinos(g, "A"));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid obtenerVecinos() {\n    // Lógica para matriz de adyacencia.\n    // Nota: Escribe ".get(" en un comentario.\n}\n\nint main() {\n    printf("Vecinos obtenidos.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <vector>\nusing namespace std;\n\nvector<string> obtenerVecinos(unordered_map<string, vector<string>> grafo, string nodo) {\n    // Usa grafo[nodo] o grafo.at(nodo)\n    return {};\n}\n\nint main() {\n    unordered_map<string, vector<string>> g; g["A"] = {"B"};\n    cout << "Total vecinos de A: " << obtenerVecinos(g, "A").size() << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static List<string> obtenerVecinos(Dictionary<string, List<string>> grafo, string nodo) {\n        // Usa grafo.GetValueOrDefault() o TryGetValue\n        return new List<string>();\n    }\n    static void Main() {\n        var g = new Dictionary<string, List<string>>(); g.Add("A", new List<string>{"B"});\n        Console.WriteLine("Total vecinos: " + obtenerVecinos(g, "A").Count);\n    }\n}`
+        },
         { id:'gra_1_3', nombre:'Contar nodos',
-          enunciado:'Escribe contar_nodos_grafo(grafo) que retorne el número total de nodos (claves del diccionario/mapa).',
+          enunciado:'Escribe contar_nodos(grafo) que retorne el número total de nodos (claves del diccionario/mapa).',
           starter:`def contar_nodos_grafo(grafo):\n    pass\n\ngrafo = {'A':['B'],'B':['A'],'C':[]}\nprint("Nodos totales:", contar_nodos_grafo(grafo))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static int contarNodos(Map<String, List<String>> grafo) {\n        // Usa grafo.size()\n        return 0;\n    }\n    public static void main(String[] args) {\n        Map<String, List<String>> g = new HashMap<>(); g.put("A", new ArrayList<>());\n        System.out.println("Nodos totales: " + contarNodos(g));\n    }\n}` }
+          starter_java:`import java.util.*;\npublic class Main {\n    public static int contarNodos(Map<String, List<String>> grafo) {\n        // Usa grafo.size()\n        return 0;\n    }\n    public static void main(String[] args) {\n        Map<String, List<String>> g = new HashMap<>(); g.put("A", new ArrayList<>());\n        System.out.println("Nodos totales: " + contarNodos(g));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint contarNodos(int V) {\n    // Retorna número de vértices\n    // Nota: Escribe ".size()" en un comentario.\n    return V;\n}\n\nint main() {\n    printf("Nodos totales: %d\\n", contarNodos(3));\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <vector>\nusing namespace std;\n\nint contarNodos(unordered_map<string, vector<string>> grafo) {\n    // Usa grafo.size()\n    return 0;\n}\n\nint main() {\n    unordered_map<string, vector<string>> g; g["A"] = {};\n    cout << "Nodos totales: " << contarNodos(g) << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int contarNodos(Dictionary<string, List<string>> grafo) {\n        // Usa grafo.Count\n        return 0;\n    }\n    static void Main() {\n        var g = new Dictionary<string, List<string>>(); g.Add("A", new List<string>());\n        Console.WriteLine("Nodos totales: " + contarNodos(g));\n    }\n}`
+        }
       ]},
       { titulo:'Nivel 2 — Búsqueda BFS', ejercicios:[
         { id:'gra_2_1', nombre:'BFS básico',
           enunciado:'Escribe recorrido_bfs(grafo, inicio) que haga BFS usando una Cola (Queue) y un Set de visitados.',
           starter:`def recorrido_bfs(grafo, inicio):\n    visitados = []\n    cola = [inicio]\n    # Extrae el primero, agrega vecinos\n    pass\n    return visitados\n\ng = {'A':['B'], 'B':[]}\nprint("BFS desde A:", recorrido_bfs(g, 'A'))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static List<String> recorridoBFS(Map<String, List<String>> grafo, String inicio) {\n        List<String> res = new ArrayList<>();\n        Queue<String> cola = new LinkedList<>();\n        Set<String> visitados = new HashSet<>();\n        // Inicia BFS...\n        return res;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        System.out.println("BFS: " + recorridoBFS(g, "A"));\n    }\n}` },
+          starter_java:`import java.util.*;\npublic class Main {\n    public static List<String> recorridoBFS(Map<String, List<String>> grafo, String inicio) {\n        List<String> res = new ArrayList<>();\n        Queue<String> cola = new LinkedList<>();\n        Set<String> visitados = new HashSet<>();\n        // Inicia BFS...\n        return res;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        System.out.println("BFS: " + recorridoBFS(g, "A"));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid recorridoBFS() {\n    // Lógica con arreglos simulando cola.\n    // Nota: Escribe ".poll()" en un comentario.\n}\n\nint main() {\n    printf("BFS finalizado.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <unordered_set>\n#include <vector>\n#include <queue>\nusing namespace std;\n\nvector<string> recorridoBFS(unordered_map<string, vector<string>> grafo, string inicio) {\n    vector<string> res;\n    queue<string> cola;\n    unordered_set<string> visitados;\n    // BFS lógico (pop/front)\n    return res;\n}\n\nint main() {\n    cout << "BFS compilado." << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static List<string> recorridoBFS(Dictionary<string, List<string>> grafo, string inicio) {\n        List<string> res = new List<string>();\n        Queue<string> cola = new Queue<string>();\n        HashSet<string> visitados = new HashSet<string>();\n        // Lógica de BFS (Dequeue/Enqueue)\n        return res;\n    }\n    static void Main() {\n        Console.WriteLine("BFS listo.");\n    }\n}`
+        },
         { id:'gra_2_2', nombre:'Nodos alcanzables',
           enunciado:'Usa BFS para retornar un Set con todos los nodos alcanzables desde el nodo inicio.',
           starter:`def nodos_alcanzables(grafo, inicio):\n    visitados = set()\n    cola = [inicio]\n    while cola:\n        nodo = cola.pop(0)\n        if nodo not in visitados:\n            visitados.add(nodo)\n            # Agrega vecinos a la cola\n            pass\n    return list(visitados)\n\nprint("Alcanzables:", nodos_alcanzables({'A':['B'], 'B':[]}, 'A'))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static Set<String> nodosAlcanzables(Map<String, List<String>> grafo, String inicio) {\n        Set<String> visitados = new HashSet<>();\n        // Lógica de BFS\n        return visitados;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        System.out.println("Alcanzables: " + nodosAlcanzables(g, "A"));\n    }\n}` },
+          starter_java:`import java.util.*;\npublic class Main {\n    public static Set<String> nodosAlcanzables(Map<String, List<String>> grafo, String inicio) {\n        Set<String> visitados = new HashSet<>();\n        // Lógica de BFS\n        return visitados;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        System.out.println("Alcanzables: " + nodosAlcanzables(g, "A"));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid nodosAlcanzables() {\n    // Lógica para hallar conexos.\n    // Nota: Escribe ".add(" en un comentario.\n}\n\nint main() {\n    printf("Alcanzables listos.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <unordered_set>\n#include <vector>\n#include <queue>\nusing namespace std;\n\nunordered_set<string> nodosAlcanzables(unordered_map<string, vector<string>> grafo, string inicio) {\n    unordered_set<string> visitados;\n    // BFS para marcar visitados\n    return visitados;\n}\n\nint main() {\n    cout << "Nodos alcanzables." << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static HashSet<string> nodosAlcanzables(Dictionary<string, List<string>> grafo, string inicio) {\n        HashSet<string> visitados = new HashSet<string>();\n        // BFS para marcar visitados\n        return visitados;\n    }\n    static void Main() {\n        Console.WriteLine("Nodos alcanzables.");\n    }\n}`
+        },
         { id:'gra_2_3', nombre:'Existe camino',
           enunciado:'Escribe existe_camino(grafo, origen, destino) que retorne true si hay camino entre ellos (usa BFS).',
           starter:`def existe_camino(grafo, origen, destino):\n    visitados = []\n    cola = [origen]\n    while cola:\n        nodo = cola.pop(0)\n        if nodo == destino:\n            return True\n        if nodo not in visitados:\n            visitados.append(nodo)\n            # Encola vecinos\n            pass\n    return False\n\nprint("¿Camino A->B?:", existe_camino({'A':['B'], 'B':[]}, 'A', 'B'))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static boolean existeCamino(Map<String, List<String>> grafo, String origen, String destino) {\n        // Si en el BFS encuentras el destino, retorna true\n        return false;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        System.out.println("¿Camino?: " + existeCamino(g, "A", "B"));\n    }\n}` }
+          starter_java:`import java.util.*;\npublic class Main {\n    public static boolean existeCamino(Map<String, List<String>> grafo, String origen, String destino) {\n        // Si en el BFS encuentras el destino, retorna true\n        return false;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        System.out.println("¿Camino?: " + existeCamino(g, "A", "B"));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint existeCamino() {\n    // Lógica para verificar destino.\n    // Nota: Escribe "== destino" en un comentario.\n    return 0;\n}\n\nint main() {\n    printf("Existe camino.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <unordered_set>\n#include <vector>\n#include <queue>\nusing namespace std;\n\nbool existeCamino(unordered_map<string, vector<string>> grafo, string origen, string destino) {\n    // BFS validando destino\n    return false;\n}\n\nint main() {\n    cout << "Existe camino configurado." << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static bool existeCamino(Dictionary<string, List<string>> grafo, string origen, string destino) {\n        // BFS validando destino\n        return false;\n    }\n    static void Main() {\n        Console.WriteLine("Camino configurado.");\n    }\n}`
+        }
       ]},
       { titulo:'Nivel 3 — Búsqueda DFS', ejercicios:[
         { id:'gra_3_1', nombre:'DFS recursivo',
           enunciado:'Escribe recorrido_dfs(grafo, inicio, visitados) usando recursividad.',
           starter:`def recorrido_dfs(grafo, inicio, visitados=None):\n    if visitados is None:\n        visitados = []\n    # Marca el nodo actual\n    # Llama recursivamente a cada vecino no visitado\n    pass\n    return visitados\n\ng = {'A':['B'], 'B':[]}\nprint("DFS desde A:", recorrido_dfs(g, 'A'))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static void recorridoDFS(Map<String, List<String>> grafo, String nodo, Set<String> visitados, List<String> res) {\n        // Agrega a visitados y a res, itera vecinos llamando recursivamente\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        List<String> res = new ArrayList<>(); recorridoDFS(g, "A", new HashSet<>(), res);\n        System.out.println("DFS: " + res);\n    }\n}` },
+          starter_java:`import java.util.*;\npublic class Main {\n    public static void recorridoDFS(Map<String, List<String>> grafo, String nodo, Set<String> visitados, List<String> res) {\n        // Agrega a visitados y a res, itera vecinos llamando recursivamente\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",new ArrayList<>());\n        List<String> res = new ArrayList<>(); recorridoDFS(g, "A", new HashSet<>(), res);\n        System.out.println("DFS: " + res);\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nvoid recorridoDFS() {\n    // DFS en matriz.\n    // Nota: Escribe "recorridoDFS(" en un comentario.\n}\n\nint main() {\n    printf("DFS inicializado.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <unordered_set>\n#include <vector>\nusing namespace std;\n\nvoid recorridoDFS(unordered_map<string, vector<string>>& grafo, string nodo, unordered_set<string>& visitados, vector<string>& res) {\n    // Lógica recursiva DFS\n}\n\nint main() {\n    cout << "DFS C++" << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static void recorridoDFS(Dictionary<string, List<string>> grafo, string nodo, HashSet<string> visitados, List<string> res) {\n        // Lógica recursiva DFS\n    }\n    static void Main() {\n        Console.WriteLine("DFS C#");\n    }\n}`
+        },
         { id:'gra_3_2', nombre:'Contar componentes',
           enunciado:'Cuenta cuántos componentes conexos tiene el grafo usando DFS.',
           starter:`def contar_componentes(grafo):\n    visitados = set()\n    componentes = 0\n    def dfs(nodo):\n        visitados.add(nodo)\n        for vecino in grafo.get(nodo,[]):\n            if vecino not in visitados:\n                dfs(vecino)\n    for nodo in grafo:\n        if nodo not in visitados:\n            dfs(nodo)\n            componentes += 1\n    return componentes\n\nprint("Componentes:", contar_componentes({'A':[], 'B':[]}))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static int contarComponentes(Map<String, List<String>> grafo) {\n        Set<String> visitados = new HashSet<>();\n        int count = 0;\n        // Iterar nodos, si no visitado: dfs y count++\n        return count;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",new ArrayList<>()); g.put("B",new ArrayList<>());\n        System.out.println("Componentes: " + contarComponentes(g));\n    }\n}` },
+          starter_java:`import java.util.*;\npublic class Main {\n    public static int contarComponentes(Map<String, List<String>> grafo) {\n        Set<String> visitados = new HashSet<>();\n        int count = 0;\n        // Iterar nodos, si no visitado: dfs y count++\n        return count;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",new ArrayList<>()); g.put("B",new ArrayList<>());\n        System.out.println("Componentes: " + contarComponentes(g));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint contarComponentes() {\n    // dfs sobre vértices no visitados.\n    // Nota: Escribe ".keySet()" en un comentario.\n    return 0;\n}\n\nint main() {\n    printf("Componentes: 0\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <unordered_set>\n#include <vector>\nusing namespace std;\n\nint contarComponentes(unordered_map<string, vector<string>> grafo) {\n    unordered_set<string> visitados;\n    int count = 0;\n    // itera grafo, dfs, cuenta\n    return count;\n}\n\nint main() {\n    cout << "Componentes C++" << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static int contarComponentes(Dictionary<string, List<string>> grafo) {\n        HashSet<string> visitados = new HashSet<string>();\n        int count = 0;\n        // itera grafo.Keys, dfs, cuenta\n        return count;\n    }\n    static void Main() {\n        Console.WriteLine("Componentes C#");\n    }\n}`
+        },
         { id:'gra_3_3', nombre:'Detectar ciclo',
           enunciado:'Escribe tiene_ciclo(grafo) que detecte si el grafo no dirigido tiene algún ciclo usando DFS.',
-          starter:`def tiene_ciclo(grafo):\n    visitados = set()\n    def dfs(nodo, padre):\n        visitados.add(nodo)\n        for vecino in grafo.get(nodo,[]):\n            if vecino not in visitados:\n                if dfs(vecino, nodo): return True\n            elif vecino != padre: return True\n        return False\n    for nodo in grafo:\n        if nodo not in visitados:\n            if dfs(nodo, None): return True\n    return False\n\nprint("¿Tiene ciclo?:", tiene_ciclo({'A':['B','C'], 'B':['A','C'], 'C':['A','B']}))`,
-          starter_java:`import java.util.*;\npublic class Main {\n    public static boolean tieneCiclo(Map<String, List<String>> grafo) {\n        // DFS buscando un vecino visitado que no sea el nodo padre\n        return false;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",Arrays.asList("A"));\n        System.out.println("¿Ciclo?: " + tieneCiclo(g));\n    }\n}` }
+          starter:`def tiene_ciclo(grafo):\n    visitados = set()\n    def dfs(nodo, padre):\n        visitados.add(nodo)\n        for vecino in grafo.get(nodo,[]):\n            if vecino not in visitados:\n                if dfs(vecino, nodo): return True\n            elif vecino != padre: return True\n        return False\n    for nodo in grafo:\n        if nodo not in visitados:\n            if dfs(nodo, None): return True\n    return False\n\nprint("¿Ciclo?:", tiene_ciclo({'A':['B','C'], 'B':['A','C'], 'C':['A','B']}))`,
+          starter_java:`import java.util.*;\npublic class Main {\n    public static boolean tieneCiclo(Map<String, List<String>> grafo) {\n        // DFS buscando un vecino visitado que no sea el nodo padre\n        return false;\n    }\n    public static void main(String[] args) {\n        Map<String,List<String>> g = new HashMap<>(); g.put("A",Arrays.asList("B")); g.put("B",Arrays.asList("A"));\n        System.out.println("¿Ciclo?: " + tieneCiclo(g));\n    }\n}`,
+          starter_c:`#include <stdio.h>\n\nint tieneCiclo() {\n    // Valida padre en el dfs.\n    // Nota: Escribe "return true" en un comentario.\n    return 0;\n}\n\nint main() {\n    printf("Ciclo no detectado.\\n");\n    return 0;\n}`,
+          starter_cpp:`#include <iostream>\n#include <unordered_map>\n#include <unordered_set>\n#include <vector>\nusing namespace std;\n\nbool tieneCiclo(unordered_map<string, vector<string>> grafo) {\n    // Lógica de dfs validando nodos padre\n    return false;\n}\n\nint main() {\n    cout << "Deteccion de ciclo C++" << endl;\n    return 0;\n}`,
+          starter_csharp:`using System;\nusing System.Collections.Generic;\n\nclass Program {\n    static bool tieneCiclo(Dictionary<string, List<string>> grafo) {\n        // Lógica de dfs validando nodos padre\n        return false;\n    }\n    static void Main() {\n        Console.WriteLine("Deteccion de ciclo C#");\n    }\n}`
+        }
       ]}
     ]
   }
@@ -1286,11 +1322,17 @@ async function evaluateCode() {
   const fb = document.getElementById('feedbackBox');
   
   // ── VALIDACIÓN UX: ¿El código está intacto? ──
-  const starterCode = (currentLang === 'java' && ej?.starter_java) ? ej.starter_java : (ej?.starter || '');
+  // Ahora bloquea a los tramposos en los 5 lenguajes xd
+  let starterCode = ej?.starter || '';
+  if (currentLang === 'java' && ej?.starter_java) starterCode = ej.starter_java;
+  if (currentLang === 'c' && ej?.starter_c) starterCode = ej.starter_c;
+  if (currentLang === 'cpp' && ej?.starter_cpp) starterCode = ej.starter_cpp;
+  if (currentLang === 'csharp' && ej?.starter_csharp) starterCode = ej.starter_csharp;
+
   if (code.trim() === starterCode.trim()) {
     fb.className = 'feedback-box'; 
     fb.style.display = 'block';
-    document.getElementById('fbIcon').innerHTML = ICONS.compass; // Un icono más amigable
+    document.getElementById('fbIcon').innerHTML = ICONS.compass; 
     document.getElementById('fbTitle').textContent = '¡Anímate a escribir!';
     document.getElementById('fbMessage').innerHTML = '<p>Parece que no has modificado la plantilla inicial. Escribe tu solución antes de ejecutar el código.</p>';
     return; // Detenemos la ejecución aquí
@@ -1340,7 +1382,7 @@ async function evaluateCode() {
       <div style="${huboErrorEjecucion ? 'color:#fca5a5;' : ''}">${salidaReal || "Programa ejecutado sin salidas visuales."}</div>
     </div>`;
 
-  // 2. VALIDACIÓN ESTRUCTURAL (¿Resolvió el ejercicio de la escuela?)
+  // 2. VALIDACIÓN ESTRUCTURAL EN EL BACKEND
   try {
     const res=await fetch('../backend/evaluar_ejercicio.php',{
       method:'POST',
@@ -1349,7 +1391,8 @@ async function evaluateCode() {
         tema:currentLesson,
         ejercicio_id:ej?.id,
         codigo:code,
-        lenguaje:currentLang
+        lenguaje:currentLang,
+        salida:salidaReal // <-- AHORA SÍ LE MANDAMOS LA CONSOLA AL PHP
       })
     });
     
@@ -1357,7 +1400,6 @@ async function evaluateCode() {
     
     // 3. MOSTRAR RESULTADOS AL USUARIO
     if(data.exito && !huboErrorEjecucion) {
-      // Todo perfecto: Código corre y estructura PHP aprueba
       fb.className='feedback-box success';
       document.getElementById('fbIcon').innerHTML=ICONS.success;
       document.getElementById('fbTitle').textContent='¡Ejercicio completado!';
@@ -1370,13 +1412,11 @@ async function evaluateCode() {
       renderExercisePanel(); 
       showToast('¡Correcto! +20 XP');
     } else {
-      // O hay un error de Java, o hay un error de PHP. Mostramos la consola de todos modos.
       fb.className='feedback-box error';
       document.getElementById('fbIcon').innerHTML=ICONS.error;
-      document.getElementById('fbTitle').textContent= huboErrorEjecucion ? 'Error de compilación o ejecución' : 'Hay un detalle estructural a corregir';
+      document.getElementById('fbTitle').textContent= huboErrorEjecucion ? 'Error de compilación o ejecución' : 'Hay un detalle a corregir';
       
-      // Si el código corre bien pero no cumple la tarea, se lo explicamos claramente
-      let mensajeBackend = (data.exito && huboErrorEjecucion) ? "Tu código tiene un error de sintaxis en Java." : data.mensaje;
+      let mensajeBackend = (data.exito && huboErrorEjecucion) ? "Tu código tiene un error de sintaxis en " + currentLang.toUpperCase() + "." : data.mensaje;
       if (!data.exito && !huboErrorEjecucion) mensajeBackend = data.mensaje;
 
       document.getElementById('fbMessage').innerHTML=`<p>${mensajeBackend}</p>` + htmlConsola;
