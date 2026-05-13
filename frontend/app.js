@@ -538,6 +538,42 @@ async function handleResetPassword() {
   }
 }
 
+// ── AUTENTICACIÓN CON GOOGLE ──
+async function handleGoogleLogin(response) {
+  // Google nos manda el JWT (JSON Web Token) en la variable response.credential
+  const googleToken = response.credential;
+  
+  // Usaremos la caja de error del login por si falla la conexión
+  const errBox = document.getElementById('loginError'); 
+  
+  try {
+    const res = await fetch('../backend/autenticacion.php?accion=google_login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: googleToken })
+    });
+    
+    const data = await res.json();
+    
+    if (data.exito) {
+      errBox.style.display = 'none';
+      showToast(data.mensaje);
+      
+      currentUser = data.usuario.username;
+      localStorage.setItem('dl_currentUser', currentUser); 
+      
+      // Enviamos al usuario al Dashboard
+      setTimeout(() => enterDashboard(currentUser), 800);
+    } else {
+      errBox.textContent = data.mensaje;
+      errBox.style.display = 'block';
+    }
+  } catch (error) {
+    errBox.textContent = 'Error de conexión con el servidor al usar Google.';
+    errBox.style.display = 'block';
+  }
+}
+
 function logout() {
   currentUser=null; 
   progressCache={};

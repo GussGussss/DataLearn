@@ -9,8 +9,17 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
+<div id="g_id_onload"
+     data-client_id="869416589250-ha8q807htfnn86h8fp23blobmrbsdflb.apps.googleusercontent.com"
+     data-context="use"
+     data-ux_mode="popup"
+     data-callback="handleGoogleLogin"
+     data-auto_prompt="false">
+</div>
 
 <!-- ══════════════════ LOGIN ══════════════════ -->
 <div class="screen active" id="loginScreen">
@@ -39,6 +48,11 @@
     <br>
     <button class="btn-primary" id="btnLogin" onclick="handleLogin()">Iniciar sesión →</button>
     <div class="login-divider">— o bien —</div>
+    
+    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black" data-text="signin_with" data-size="large" data-logo_alignment="left"></div>
+    </div>
+
     <button class="btn-register" onclick="showScreen('registerScreen')">Crear cuenta nueva</button>
   </div>
 </div>
@@ -80,6 +94,12 @@
       </div>
     </div>
     <button class="btn-primary" id="btnRegister" onclick="handleRegister()">Registrarme →</button>
+    
+    <div class="login-divider">— o regístrate con —</div>
+    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black" data-text="signup_with" data-size="large" data-logo_alignment="left"></div>
+    </div>
+
     <div class="login-divider">— ¿Ya tienes cuenta? —</div>
     <button class="btn-register" onclick="showScreen('loginScreen')">← Volver al login</button>
   </div>

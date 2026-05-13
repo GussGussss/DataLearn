@@ -21,6 +21,9 @@ switch ($accion) {
     case 'reset': // <--- NUEVO CASO AGREGADO
         restablecerPassword($conexion, $datos_recibidos);
         break;
+    case 'google_login': 
+        loginGoogle($conexion, $datos_recibidos);
+        break;
     default:
         echo json_encode(["exito" => false, "mensaje" => "Acción no válida."]);
         break;
@@ -137,6 +140,81 @@ function restablecerPassword($conexion, $datos) {
 
     } catch(PDOException $e) {
         echo json_encode(["exito" => false, "mensaje" => "Error de base de datos al actualizar contraseña."]);
+    }
+}
+
+function loginGoogle($conexion, $datos) {
+    $token = $datos['credential']; // Este es el Token JWT que nos mandará tu frontend
+    
+    // 1. Validar el token directamente con los servidores de Google
+    $url = "https://oauth2.googleapis.com/tokeninfo?id_token=" . $token;
+    $respuesta = @file_get_contents($url);
+    
+    if ($respuesta === false) {
+        echo json_encode(["exito" => false, "mensaje" => "Token de Google inválido o caducado."]);
+        return;
+    }
+    
+    $payload = json_decode($respuesta, true);
+    
+    // Si no trae correo, algo salió mal
+    if (!isset($payload['email'])) {
+        echo json_encode(["exito" => false, "mensaje" => "No se pudo obtener la información de Google."]);
+        return;
+    }
+
+    $correo = $payload['email'];
+    $google_id = $payload['sub']; // 'sub' es el identificador único en Google
+    $nombre_google = $payload['name']; // El nombre que tiene en su cuenta de Google
+    
+    try {
+        // 2. Buscamos si este usuario ya existe en nuestra base de datos
+        $consulta = $conexion->prepare("SELECT id_usuario, nombre_usuario FROM usuarios WHERE correo = ? OR google_id = ?");
+        $consulta->execute([$correo, $google_id]);
+        $usuario_db = $consulta->fetch(PDO::FETCH_ASSOC);
+
+        if ($usuario_db) {
+            // SI EXISTE: Le iniciamos sesión normal
+            $_SESSION['id_usuario'] = $usuario_db['id_usuario'];
+            $_SESSION['nombre_usuario'] = $usuario_db['nombre_usuario'];
+            
+            echo json_encode([
+                "exito" => true, 
+                "mensaje" => "¡Bienvenido de vuelta con Google!", 
+                "usuario" => ["username" => $usuario_db['nombre_usuario']]
+            ]);
+        } else {
+            // NO EXISTE: Le creamos una cuenta automáticamente (Registro silencioso)
+            
+            // Creamos un username a partir de su nombre (sin espacios y en minúsculas)
+            $username_base = strtolower(str_replace(' ', '', $nombre_google));
+            $username_final = $username_base;
+            
+            // Verificamos que ese username no lo tenga ya otra persona (ej. 'juanperez')
+            $check_user = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE nombre_usuario = ?");
+            $check_user->execute([$username_final]);
+            if ($check_user->rowCount() > 0) {
+                // Si ya existe, le pegamos un número aleatorio para que sea único
+                $username_final = $username_base . rand(1000, 9999);
+            }
+
+            // Insertamos en la base de datos (Nota: contrasena_hash queda en NULL)
+            $insertar = $conexion->prepare("INSERT INTO usuarios (nombre_usuario, correo, auth_provider, google_id) VALUES (?, ?, 'google', ?)");
+            $insertar->execute([$username_final, $correo, $google_id]);
+            
+            // Lo logueamos inmediatamente
+            $id_nuevo = $conexion->lastInsertId();
+            $_SESSION['id_usuario'] = $id_nuevo;
+            $_SESSION['nombre_usuario'] = $username_final;
+            
+            echo json_encode([
+                "exito" => true, 
+                "mensaje" => "Cuenta creada con Google exitosamente.", 
+                "usuario" => ["username" => $username_final]
+            ]);
+        }
+    } catch(PDOException $e) {
+        echo json_encode(["exito" => false, "mensaje" => "Error de base de datos durante el login con Google."]);
     }
 }
 
