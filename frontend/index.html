@@ -202,6 +202,10 @@
         <span class="icon">◉</span> Mi Progreso
       </div>
 
+      <div class="sidebar-item" id="btnAdminPanel" style="display: none; color: #a5b4fc;" onclick="openAdminPanel();setSidebarCollapsed(false);">
+        <span class="icon">⊚</span> Panel Docente
+      </div>
+
       <div class="sidebar-section-title">Lineales</div>
       <div class="sidebar-item" onclick="openLesson('matrices')">
         <span class="icon">▦</span> Matrices
@@ -474,6 +478,27 @@
           <div class="overall-bar"><div class="overall-bar-fill" id="overallFill" style="width:0%"></div></div>
         </div>
         <div class="progress-list" id="progressList"></div>
+      </div>
+
+      <div class="view" id="adminView">
+        <div class="progress-header">
+          <h2>Panel Docente</h2>
+          <p>Alumnos registrados en el sistema.</p>
+        </div>
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Origen</th>
+                <th>Registro</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              </tbody>
+          </table>
+        </div>
       </div>
 
     </main><!-- /mainContent -->
