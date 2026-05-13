@@ -74,8 +74,16 @@ function initTheme() {
     codeEditor = CodeMirror.fromTextArea(textArea, {
       mode: "python",
       theme: isLight ? "eclipse" : "dracula",
-      lineNumbers: true, // ¡Agrega números de línea!
+      lineNumbers: true, 
       indentUnit: 4
+    });
+
+    // ── NUEVO: AUTOGUARDADO AL ESCRIBIR ──
+    codeEditor.on("change", () => {
+        if (currentUser && currentLesson) {
+            const savedCodeKey = `dl_code_${currentUser}_${currentLesson}_${currentLevelIdx}_${currentExerciseIdx}_${currentLang}`;
+            localStorage.setItem(savedCodeKey, codeEditor.getValue());
+        }
     });
   }
 }
