@@ -1084,6 +1084,9 @@ function switchTab(tabId, btn) {
   document.getElementById(tabId).classList.add('active');
   if (btn) btn.classList.add('active');
   
+  // Guardar pestaña en memoria para sobrevivir al F5
+  localStorage.setItem('dl_currentTab', tabId);
+  
   // ── LA CURA: Ocultar el panel SIEMPRE que no estemos en Ejercicios ──
   if (tabId !== 'exerciseTab') {
       hideLessonPanel();
