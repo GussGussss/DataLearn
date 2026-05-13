@@ -973,3 +973,29 @@ button.btn-run.tour-highlight {
 .tour-tooltip p { margin: 0 0 16px 0; font-size: 13px; color: var(--text); line-height: 1.4; }
 .tour-actions { display: flex; justify-content: space-between; }
 .tour-actions button { padding: 6px 12px; font-size: 12px; }
+
+/* Contenedor para integrar mejor el botón de Google */
+.google-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  /* Hacemos un pequeño truco de opacidad para que no brille tanto en modo oscuro
+     hasta que el usuario pase el mouse por encima */
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.google-btn-container:hover {
+  opacity: 1;
+}
+
+/* Parche para Modo Claro: El tema 'outline' de Google es blanco,
+   así que en modo claro necesitamos que el contenedor tenga fondo oscuro
+   para que el borde blanco del botón se vea, o Google lo cambiará a negro automáticamente */
+body.light-mode .google-btn-container {
+    background-color: #111118; /* surface oscuro */
+    padding: 10px;
+    border-radius: 50px; /* pill shape */
+    border: 1px solid #2a2a3a; /* border oscuro */
+}
