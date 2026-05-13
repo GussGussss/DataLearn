@@ -809,19 +809,26 @@ async function enterDashboard(user) {
   document.getElementById('navUsername').textContent=user;
   document.getElementById('navAvatar').textContent=user[0].toUpperCase();
   document.getElementById('welcomeName').textContent=user;
+  
+  // 1. Restaurar lenguaje preferido globalmente
+  const savedLang = localStorage.getItem('dl_currentLang');
+  if (savedLang) {
+      currentLang = savedLang;
+      const select = document.getElementById('langSelect');
+      if (select) select.value = currentLang;
+  }
+
   await loadProgress();
 
   const savedView = localStorage.getItem('dl_currentView') || 'homeView';
   const savedLesson = localStorage.getItem('dl_currentLesson');
 
+  // 2. Restaurar estado exacto
   if (savedView === 'lessonView' && savedLesson) {
-      openLesson(savedLesson);
+      openLesson(savedLesson, true); // true = Venimos de un F5, hay que restaurar todo
   } else {
       showView(savedView);
   }
-
-  showView('homeView');
-  setTimeout(() => iniciarTour(tourDashboard, 'dashboard'), 500);
 }
 
 // ── MOTOR DE TOUR INTERACTIVO ──
