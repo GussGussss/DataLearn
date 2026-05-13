@@ -831,6 +831,8 @@ async function enterDashboard(user) {
   const savedView = localStorage.getItem('dl_currentView') || 'homeView';
   const savedLesson = localStorage.getItem('dl_currentLesson');
 
+  checkAndShowCertificate();
+
   // 2. Restaurar estado exacto
   if (savedView === 'lessonView' && savedLesson) {
       openLesson(savedLesson, true); 
@@ -1461,6 +1463,7 @@ async function evaluateCode() {
       markExerciseDone(ej.id); 
       renderExercisePanel(); 
       showToast('¡Correcto! +20 XP');
+      checkAndShowCertificate();
     } else {
       fb.className='feedback-box error';
       document.getElementById('fbIcon').innerHTML=ICONS.error;
@@ -1602,12 +1605,12 @@ async function executeRemote(sourceCode, languageId) {
     
     if (!response.ok) {
         const errorText = await response.text();
-        return `🚨 Error al enviar código (${response.status}): ${errorText}`;
+        return `Error al enviar código (${response.status}): ${errorText}`;
     }
 
     let result = await response.json();
     const token = result.token;
-    if (!token) return "🚨 Error: No se recibió el ticket (token) del Sandbox.";
+    if (!token) return " Error: No se recibió el ticket (token) del Sandbox.";
 
     // 2. POLLING
     let statusId = result.status ? result.status.id : 1;
@@ -1627,7 +1630,7 @@ async function executeRemote(sourceCode, languageId) {
         
         if (!checkResponse.ok) {
             const errTxt = await checkResponse.text();
-            return `🚨 Error al consultar estado (${checkResponse.status}): ${errTxt}`;
+            return `Error al consultar estado (${checkResponse.status}): ${errTxt}`;
         }
         
         result = await checkResponse.json();
@@ -1638,11 +1641,11 @@ async function executeRemote(sourceCode, languageId) {
     if (statusId === 3) {
         return result.stdout ? decodeBase64(result.stdout) : "Programa ejecutado sin salidas en consola.";
     } else if (statusId === 6) {
-        return "🚨 ERROR DE COMPILACIÓN:\n" + (result.compile_output ? decodeBase64(result.compile_output) : "Revisa la sintaxis de tu código.");
+        return "ERROR DE COMPILACIÓN:\n" + (result.compile_output ? decodeBase64(result.compile_output) : "Revisa la sintaxis de tu código.");
     } else if (statusId >= 7 && statusId <= 12) {
-        return "🚨 ERROR DE EJECUCIÓN (Runtime):\n" + (result.stderr ? decodeBase64(result.stderr) : "El programa falló mientras corría.");
+        return "ERROR DE EJECUCIÓN (Runtime):\n" + (result.stderr ? decodeBase64(result.stderr) : "El programa falló mientras corría.");
     } else if (statusId === 5) {
-        return "🚨 ERROR: Límite de tiempo excedido (Posible bucle infinito).";
+        return "ERROR: Límite de tiempo excedido (Posible bucle infinito).";
     } else {
         return `Estado de ejecución: ${result.status ? result.status.description : 'Desconocido'}\n` + 
                (result.stderr ? decodeBase64(result.stderr) : (result.stdout ? decodeBase64(result.stdout) : ""));
@@ -1650,6 +1653,88 @@ async function executeRemote(sourceCode, languageId) {
     
   } catch (error) {
     console.error("Error crítico en Sandbox:", error);
-    return "🚨 Fallo de conexión de Red. Revisa la consola (F12) de tu navegador.";
+    return "Fallo de conexión de Red. Revisa la consola (F12) de tu navegador.";
   }
+}
+
+// ── SISTEMA DE CERTIFICADO ──
+
+function checkAndShowCertificate() {
+  let totalEjercicios = 0;
+  let completados = 0;
+
+  for (const key in TOPICS) {
+      const tema = TOPICS[key];
+      const cache = progressCache[key] || {};
+      const resueltos = cache.resolved || [];
+
+      tema.niveles.forEach(nivel => {
+          totalEjercicios += nivel.ejercicios.length;
+      });
+      completados += resueltos.length;
+  }
+
+  const certBanner = document.getElementById('certBanner');
+  if (certBanner) {
+      // Si ya completó todos los ejercicios (y hay ejercicios registrados)
+      if (totalEjercicios > 0 && completados === totalEjercicios) {
+          certBanner.style.display = 'flex';
+      } else {
+          certBanner.style.display = 'none';
+      }
+  }
+}
+
+function downloadCertificate() {
+  const { jsPDF } = window.jspdf;
+  // Formato A4 en horizontal (Landscape)
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  // 1. Fondo oscuro elegante
+  doc.setFillColor(17, 17, 24); 
+  doc.rect(0, 0, 297, 210, 'F');
+
+  // 2. Borde exterior
+  doc.setDrawColor(99, 102, 241); // Color Indigo
+  doc.setLineWidth(2);
+  doc.rect(10, 10, 277, 190);
+  doc.setDrawColor(79, 70, 229);
+  doc.setLineWidth(0.5);
+  doc.rect(12, 12, 273, 186);
+
+  // 3. Textos Centrales
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(40);
+  doc.text("Certificado de Excelencia", 148.5, 50, { align: "center" });
+
+  doc.setFontSize(16);
+  doc.setTextColor(200, 200, 200);
+  doc.text("Este documento certifica que", 148.5, 80, { align: "center" });
+
+  // Nombre del Usuario (En cyan)
+  doc.setFontSize(36);
+  doc.setTextColor(0, 212, 255);
+  doc.text(currentUser.toUpperCase(), 148.5, 110, { align: "center" });
+
+  doc.setFontSize(14);
+  doc.setTextColor(200, 200, 200);
+  doc.text("Ha completado con éxito todos los módulos del curso interactivo de", 148.5, 135, { align: "center" });
+
+  doc.setFontSize(22);
+  doc.setTextColor(255, 255, 255);
+  doc.text("Estructuras de Datos Multilenguaje", 148.5, 150, { align: "center" });
+
+  // 4. Pie de página (Fecha e Institución)
+  const fecha = new Date().toLocaleDateString('es-MX');
+  doc.setFontSize(12);
+  doc.setTextColor(150, 150, 150);
+  doc.text(`Fecha de emisión: ${fecha}`, 148.5, 175, { align: "center" });
+  
+  // El toque institucional
+  doc.setTextColor(99, 102, 241);
+  doc.text("Plataforma Data Learn — Facultad de Ingeniería Mochis", 148.5, 185, { align: "center" });
+
+  // 5. Descargar el archivo
+  doc.save(`Certificado_DataLearn_${currentUser}.pdf`);
+  showToast("¡Certificado generado y descargado!");
 }
