@@ -825,7 +825,7 @@ async function enterDashboard(user) {
 
   // 2. Restaurar estado exacto
   if (savedView === 'lessonView' && savedLesson) {
-      openLesson(savedLesson, true); // true = Venimos de un F5, hay que restaurar todo
+      openLesson(savedLesson, true); 
   } else {
       showView(savedView);
   }
