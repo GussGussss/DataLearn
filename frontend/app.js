@@ -1489,17 +1489,22 @@ function advanceToNext() {
 }
 
 function clearCode() {
-  const ej=TOPICS[currentLesson]?.niveles[currentLevelIdx]?.ejercicios[currentExerciseIdx];
+  const ej = TOPICS[currentLesson]?.niveles[currentLevelIdx]?.ejercicios[currentExerciseIdx];
   if (codeEditor) {
-      let starterCode = ej.starter; 
-      if (currentLang === 'java' && ej.starter_java) starterCode = ej.starter_java;
-      if (currentLang === 'c' && ej.starter_c) starterCode = ej.starter_c;
-      if (currentLang === 'cpp' && ej.starter_cpp) starterCode = ej.starter_cpp;
-      if (currentLang === 'csharp' && ej.starter_csharp) starterCode = ej.starter_csharp;
+      let starterCode = ej?.starter || ''; 
+      if (currentLang === 'java' && ej?.starter_java) starterCode = ej.starter_java;
+      if (currentLang === 'c' && ej?.starter_c) starterCode = ej.starter_c;
+      if (currentLang === 'cpp' && ej?.starter_cpp) starterCode = ej.starter_cpp;
+      if (currentLang === 'csharp' && ej?.starter_csharp) starterCode = ej.starter_csharp;
+      
       codeEditor.setValue(starterCode);
+      
+      // Borramos de la memoria para que no vuelva a aparecer con F5
+      const savedCodeKey = `dl_code_${currentUser}_${currentLesson}_${currentLevelIdx}_${currentExerciseIdx}_${currentLang}`;
+      localStorage.removeItem(savedCodeKey);
   }
   document.getElementById('feedbackBox').style.display='none';
-  showToast('Código reiniciado.');
+  showToast('Código reiniciado a la plantilla base.');
 }
 
 // ── UTILIDADES ───────────────────────────────────────────────────────
