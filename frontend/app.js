@@ -1152,6 +1152,10 @@ function renderExercisePanel() {
 function toggleEpLevel(li) {
   if (!isLevelUnlocked(currentLesson, li)) { showToast('Completa el nivel anterior primero.'); return; }
   currentLevelIdx=li; currentExerciseIdx=0;
+  
+  localStorage.setItem('dl_currentLevel', li);
+  localStorage.setItem('dl_currentExercise', 0);
+  
   loadExercise(li, 0); renderExercisePanel();
 }
 
