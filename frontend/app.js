@@ -707,6 +707,20 @@ function showView(id) {
   
   localStorage.setItem('dl_currentView', id); 
   
+  // ── LA CURA: Pintar correctamente el menú lateral ──
+  // Evitamos sobreescribir la selección si estamos entrando a una lección
+  if (id !== 'lessonView') {
+      document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.sidebar-item').forEach(s => {
+          const onclickAttr = s.getAttribute('onclick') || '';
+          // Detecta si el botón es el de esta vista, o si es el botón de inicio
+          if (onclickAttr.includes(id) || (id === 'homeView' && onclickAttr.includes('goToDashboard'))) {
+              s.classList.add('active');
+          }
+      });
+  }
+  // ───────────────────────────────────────────────────
+  
   if (id === 'progressView') {
       renderProgress();
       setTimeout(() => iniciarTour(tourProgreso, 'progreso'), 500);
