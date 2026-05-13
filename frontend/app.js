@@ -1017,11 +1017,9 @@ function hideLessonPanel() {
 function togglePanel() { panelVisible ? hideLessonPanel() : showLessonPanel(); }
 
 // ── LECCIÓN ──────────────────────────────────────────────────────────
-function openLesson(key) {
-  cerrarTour(); // Limpiar tours previos
+function openLesson(key, isRestoring = false) {
+  cerrarTour(); 
   currentLesson = key; 
-  currentLevelIdx = 0; 
-  currentExerciseIdx = 0;
   localStorage.setItem('dl_currentLesson', key); 
   
   const t = TOPICS[key];
@@ -1050,10 +1048,28 @@ function openLesson(key) {
     if ((s.getAttribute('onclick') || '').includes(`'${key}'`)) s.classList.add('active');
   });
 
-  switchTab('videoTab', document.querySelector('.lesson-tab'));
+  // ── LÓGICA DE RESTAURACIÓN INTELIGENTE (F5) ──
+  if (isRestoring) {
+      currentLevelIdx = parseInt(localStorage.getItem('dl_currentLevel')) || 0;
+      currentExerciseIdx = parseInt(localStorage.getItem('dl_currentExercise')) || 0;
+      
+      const savedTab = localStorage.getItem('dl_currentTab') || 'videoTab';
+      const tabBtns = Array.from(document.querySelectorAll('.lesson-tab'));
+      const targetBtn = tabBtns.find(b => b.getAttribute('onclick').includes(savedTab)) || tabBtns[0];
+      
+      switchTab(savedTab, targetBtn);
+  } else {
+      currentLevelIdx = 0; 
+      currentExerciseIdx = 0;
+      localStorage.setItem('dl_currentLevel', 0);
+      localStorage.setItem('dl_currentExercise', 0);
+      
+      switchTab('videoTab', document.querySelector('.lesson-tab'));
+  }
+  
   showView('lessonView');
-
 }
+
 function backToHome() {
   setSidebarCollapsed(false); hideLessonPanel();
   showView('homeView');
