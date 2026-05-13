@@ -1,0 +1,965 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --border: #2a2a3a;
+  --accent: #00e5ff;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --text: #e8e8f0;
+  --muted: #6b6b80;
+  --card: #14141e;
+}
+
+/* ── MODO CLARO (LIGHT MODE) ── */
+body.light-mode {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface2: #f1f5f9;
+  --border: #e2e8f0;
+  --accent: #0284c7; /* Azul ajustado para mejor contraste en blanco */
+  --accent2: #7c3aed;
+  --accent3: #059669;
+  --warn: #d97706;
+  --danger: #dc2626;
+  --text: #0f172a;
+  --muted: #64748b;
+  --card: #ffffff;
+}
+
+/* Ajuste específico para que la consola se lea bien en modo claro */
+body.light-mode .terminal-output {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0f172a;
+}
+body.light-mode .terminal-header { color: #64748b; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── TRANSICIÓN SUAVE DE TEMA (CLARO/OSCURO) ── */
+/* Aplicamos la transición solo a las propiedades de color y fondo en los contenedores principales */
+body, .screen, .nav, .sidebar, .content, .login-card, 
+.stat-card, .topic-card, .exercise-panel, .ep-level, 
+.ep-exercise, .feedback-box, .terminal-output, 
+.lesson-tab-content, .code-editor-bar, .modal-box {
+  transition: background-color 0.50s ease, color 0.50s ease, border-color 0.50s ease;
+}
+
+/* ── SCROLLBARS PERSONALIZADAS (Global) ── */
+/* Navegadores basados en WebKit (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 8px;  /* Grosor de la barra vertical */
+  height: 8px; /* Grosor de la barra horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Fondo transparente para que se fusione con la UI */
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border); /* Usamos tu variable de borde para la barrita */
+  border-radius: 4px;        /* Bordes redondeados */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);  /* Se oscurece/aclara al pasar el mouse */
+}
+
+/* Para navegadores basados en Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; }
+
+/* ── LOGIN / REGISTRO ── */
+#loginScreen, #registerScreen, #forgotScreen {
+  align-items: center; justify-content: center;
+  background: var(--bg); position: relative;
+}
+
+.login-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.login-bg::before, .login-bg::after {
+  content: ''; position: absolute; width: 600px; height: 600px;
+  border-radius: 50%;
+  animation: pulse 6s ease-in-out infinite;
+}
+.login-bg::before {
+  top: -200px; left: -200px;
+  background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+}
+.login-bg::after {
+  bottom: -200px; right: -200px;
+  background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
+  animation-direction: reverse;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 420px;
+  margin: 20px;
+  z-index: 1;
+  box-sizing: border-box;
+  box-shadow: 0 0 60px rgba(0,229,255,0.06), 0 32px 64px rgba(0,0,0,0.6);
+}
+
+.login-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; }
+.logo-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 10px; display: grid; place-items: center; font-size: 18px; color: #fff;
+}
+.logo-text { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.logo-text span { color: var(--accent); }
+
+.login-card h2 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+.login-card p { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+.password-wrapper { position: relative; display: flex; align-items: center; }
+.password-wrapper input { width: 100%; padding-right: 40px; }
+
+.toggle-password {
+  position: absolute; right: 12px; cursor: pointer;
+  color: var(--muted); display: flex; align-items: center; transition: color 0.2s;
+}
+.toggle-password:hover { color: var(--text); }
+
+.forgot-password { text-align: center; margin-top: 16px; }
+.forgot-password a {
+  color: var(--accent); text-decoration: none;
+  font-size: 13px; font-weight: 600; transition: text-decoration 0.2s;
+}
+.forgot-password a:hover { text-decoration: underline; }
+
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+}
+.form-group input {
+  width: 100%; padding: 12px 16px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+  font-family: 'Space Mono', monospace; font-size: 14px;
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); }
+
+.btn-primary {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--accent), #00b8d4);
+  border: none; border-radius: 8px; color: #000;
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.login-divider { text-align: center; color: var(--muted); font-size: 12px; margin: 20px 0; }
+.btn-register {
+  width: 100%; padding: 12px; background: transparent;
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-family: 'Syne', sans-serif; font-size: 14px; cursor: pointer;
+}
+.btn-register:hover { border-color: var(--accent2); background: rgba(124,58,237,0.05); }
+
+.login-error {
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px; padding: 10px 14px; font-size: 13px;
+  color: #fca5a5; margin-bottom: 16px; display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════════════════════ */
+#dashboardScreen { flex-direction: column; background: var(--bg); }
+
+/* ── NAVBAR ── */
+.nav {
+  display: flex; align-items: center; padding: 0 32px; height: 64px;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100; gap: 24px;
+}
+
+/* Bloque izquierdo: hamburguesa + logo (un solo conjunto) */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: auto;
+}
+
+/* Logo en el nav (clickeable para ir al dashboard) */
+.nav-logo { font-size: 18px; font-weight: 800; }
+.nav-logo .dot { color: var(--accent); }
+
+/* Botón hamburguesa del nav */
+.btn-icon-nav {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 8px; color: var(--muted);
+  cursor: pointer; transition: border-color 0.2s, color 0.2s; flex-shrink: 0;
+}
+.btn-icon-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+.nav-user { display: flex; align-items: center; gap: 12px; }
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  display: grid; place-items: center; font-size: 13px; font-weight: 700; color: white;
+}
+.username { font-size: 14px; font-weight: 600; }
+.btn-logout {
+  padding: 6px 14px; background: transparent;
+  border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer;
+}
+.btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── LAYOUT PRINCIPAL ── */
+.dashboard-body { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 260px; background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 16px; overflow-y: auto; flex-shrink: 0;
+  /* Transición suave de colapso */
+  transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.22s ease,
+              padding 0.28s ease;
+}
+/* Estado colapsado: sidebar desaparece sin ocupar espacio */
+.sidebar.collapsed {
+  width: 0 !important;
+  padding: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+  border-right: none;
+  overflow: hidden;
+}
+
+.sidebar-section-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 0 12px; margin: 20px 0 8px;
+}
+.sidebar-section-title:first-child { margin-top: 0; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+  border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+  color: var(--muted); border: 1px solid transparent;
+}
+.sidebar-item:hover { background: var(--surface2); color: var(--text); }
+.sidebar-item.active {
+  background: rgba(0,229,255,0.08);
+  border-color: rgba(0,229,255,0.2); color: var(--accent);
+}
+.sidebar-item .badge {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  padding: 2px 6px; border-radius: 10px;
+}
+.badge-done { background: rgba(16,185,129,0.15); color: var(--accent3); }
+.badge-lock { background: rgba(107,107,128,0.15); color: var(--muted); }
+.progress-mini {
+  height: 3px; background: var(--border); border-radius: 2px;
+  margin: 4px 12px 0; overflow: hidden;
+}
+.progress-mini-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width 0.5s;
+}
+
+/* ── RAIL (franja delgada cuando sidebar está colapsado) ──
+   Heurística #1: siempre visible la forma de recuperar el menú */
+.sidebar-rail {
+  display: none;
+  width: 48px; background: var(--surface);
+  border-right: 1px solid var(--border);
+  flex-direction: column; align-items: center;
+  padding-top: 14px; flex-shrink: 0;
+}
+.sidebar-rail.visible { display: flex; }
+.rail-btn {
+  width: 34px; height: 34px; background: transparent;
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--muted); cursor: pointer; font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s;
+}
+.rail-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTENIDO CENTRAL ── */
+.content { flex: 1; overflow-y: auto; padding: 32px; }
+.view { display: none; }
+.view.active { display: block; }
+
+.welcome-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+.welcome-header h1 span { color: var(--accent); }
+.welcome-header p { color: var(--muted); margin-bottom: 32px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+.stat-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.stat-value { font-size: 32px; font-weight: 800; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.stat-card.green .stat-value { color: var(--accent3); }
+.stat-card.blue .stat-value  { color: var(--accent); }
+.stat-card.purple .stat-value { color: #a78bfa; }
+
+.section-title {
+  font-size: 18px; font-weight: 800; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.topics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+.topic-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+  cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+}
+.topic-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.topic-card.linear::before  { background: linear-gradient(90deg, var(--accent), #00b8d4); }
+.topic-card.nolinear::before { background: linear-gradient(90deg, var(--accent2), #a78bfa); }
+.topic-card:hover { border-color: rgba(0,229,255,0.3); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.topic-icon { font-size: 28px; margin-bottom: 12px; }
+.topic-name { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+.topic-progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+.topic-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s; }
+.topic-progress-text { font-size: 11px; color: var(--muted); }
+
+/* ══════════════════════════════════════════════════════════════
+   LECCIONES
+══════════════════════════════════════════════════════════════ */
+
+/* Cabecera de lección: solo volver + meta */
+.lesson-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.btn-back {
+  padding: 8px 16px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 8px; color: var(--text); cursor: pointer;
+}
+.btn-back:hover { border-color: var(--accent); }
+.lesson-meta h2 { font-size: 24px; font-weight: 800; }
+.lesson-meta p  { color: var(--muted); font-size: 13px; }
+
+/* Tabs */
+.lesson-tabs {
+  display: flex; gap: 4px; margin-bottom: 24px;
+  background: var(--surface2); border-radius: 10px; padding: 4px; width: fit-content;
+}
+.lesson-tab {
+  padding: 8px 20px; border-radius: 7px; cursor: pointer;
+  font-size: 13px; font-weight: 700; color: var(--muted);
+  border: none; background: transparent; font-family: 'Syne', sans-serif;
+}
+.lesson-tab.active { background: var(--card); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.lesson-tab-content { display: none; }
+.lesson-tab-content.active { display: block; }
+
+/* Layout: editor izquierdo + panel derecho en flex row */
+.lesson-body { display: flex; gap: 20px; align-items: flex-start; }
+.lesson-center { flex: 1; min-width: 0; }
+
+/* Info boxes */
+.lesson-info-box, .exercise-prompt {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 20px;
+}
+.exercise-prompt { border-left: 4px solid var(--accent2); }
+.lesson-info-box h4, .exercise-prompt h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.exercise-prompt h4 { color: var(--accent2); }
+.lesson-info-box p, .exercise-prompt p { font-size: 13px; color: #b0b0c0; line-height: 1.7; }
+.lesson-info-box ul { font-size: 13px; color: #b0b0c0; line-height: 1.9; padding-left: 20px; }
+
+/* Barra superior del tab Ejercicio — contiene el botón "Ver ejercicios"
+   Heurística #7: el control aparece solo donde el usuario lo necesita */
+.exercise-tab-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border);
+}
+.exercise-tab-bar-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.2px; color: var(--muted);
+}
+.btn-toggle-panel {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px;
+  background: rgba(0,229,255,0.06);
+  border: 1px solid rgba(0,229,255,0.25);
+  border-radius: 8px; color: var(--accent);
+  cursor: pointer; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.3px; white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.btn-toggle-panel:hover {
+  background: rgba(0,229,255,0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.06);
+}
+.btn-toggle-panel-label { font-family: 'Inter', sans-serif; }
+
+/* Editor de código */
+.code-editor-wrapper {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+}
+.code-editor-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+.code-dot { width: 12px; height: 12px; border-radius: 50%; }
+.lang-badge { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--muted); font-family: 'Space Mono', monospace; }
+.code-input {
+  width: 100%; min-height: 220px; padding: 16px;
+  background: var(--card); border: none; color: #a8d8ea;
+  font-family: 'Space Mono', monospace; font-size: 13px; outline: none; resize: vertical;
+}
+
+.code-actions { display: flex; gap: 10px; align-items: center; }
+.btn-run {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--accent3), #059669);
+  border: none; border-radius: 8px; color: #fff;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.btn-run:hover { opacity: 0.9; }
+
+/* ── BOTÓN SECUNDARIO (GHOST BUTTON) ── */
+.btn-clear {
+  padding: 10px 20px;
+  background-color: transparent; /* Fondo invisible */
+  color: var(--muted);           /* Texto en color gris apagado */
+  border: 1px solid var(--border); /* Borde sutil */
+  border-radius: 8px;
+  font-family: 'Syne', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-clear:hover {
+  background-color: var(--surface2); /* Fondo gris claro/oscuro al pasar el mouse */
+  color: var(--text);                /* El texto se ilumina para indicar que es clickeable */
+  border-color: var(--muted);
+}
+
+.feedback-box {
+  border-radius: 10px; padding: 14px 18px; font-size: 13px;
+  margin-top: 14px; display: none; border: 1px solid;
+}
+.feedback-box.success { background: rgba(16,185,129,0.08); border-color: rgba(16,185,129,0.3); color: #6ee7b7; display: block; }
+.feedback-box.error   { background: rgba(239,68,68,0.08);  border-color: rgba(239,68,68,0.3);  color: #fca5a5; display: block; }
+.fb-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+
+/* ══════════════════════════════════════════════════════════════
+   PANEL DE EJERCICIOS TIPO UDEMY (derecho)
+   Heurística #1 (Visibilidad) · #7 (Flexibilidad)
+══════════════════════════════════════════════════════════════ */
+.exercise-panel {
+  width: 0; opacity: 0; overflow: hidden; flex-shrink: 0;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  display: flex; flex-direction: column;
+  position: sticky; top: 80px; max-height: calc(100vh - 100px);
+  transition: width 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+}
+.exercise-panel.visible { width: 300px; opacity: 1; overflow-y: auto; }
+
+.exercise-panel::-webkit-scrollbar { width: 4px; }
+.exercise-panel::-webkit-scrollbar-track { background: transparent; }
+.exercise-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.exercise-panel::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* Barra superior del panel */
+.ep-close-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 14px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 2;
+  background: linear-gradient(135deg, rgba(0,229,255,0.04) 0%, rgba(124,58,237,0.04) 100%);
+}
+.ep-close-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--accent);
+}
+.ep-close-btn {
+  width: 26px; height: 26px; background: transparent;
+  border: 1px solid var(--border); border-radius: 6px;
+  color: var(--muted); cursor: pointer; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s; line-height: 1;
+}
+.ep-close-btn:hover { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.06); }
+
+/* Cabecera interna (nombre del tema) */
+.ep-header { padding: 14px 18px 12px; border-bottom: 1px solid var(--border); }
+.ep-title {
+  display: block; font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.8px; color: var(--muted); margin-bottom: 5px;
+}
+.ep-subtitle { display: block; font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.ep-body { padding-bottom: 20px; }
+
+/* Acordeón de niveles */
+.ep-level { border-bottom: 1px solid var(--border); }
+.ep-level:last-child { border-bottom: none; }
+.ep-level.locked .ep-level-header { opacity: 0.45; cursor: not-allowed; }
+
+.ep-level-header {
+  display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+  cursor: pointer; transition: background 0.15s; user-select: none;
+}
+.ep-level-header:hover { background: rgba(255,255,255,0.025); }
+.ep-level.open .ep-level-header { background: rgba(0,229,255,0.04); }
+
+.ep-chevron { display: flex; align-items: center; color: var(--muted); flex-shrink: 0; transition: color 0.2s; }
+.ep-level.open .ep-chevron { color: var(--accent); }
+
+.ep-level-info { flex: 1; min-width: 0; }
+.ep-level-name {
+  display: block; font-size: 13px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
+}
+.ep-level-count { display: block; font-size: 11px; color: var(--muted); }
+.ep-level-pct {
+  font-size: 11px; font-weight: 700; font-family: 'Space Mono', monospace;
+  color: var(--accent); flex-shrink: 0;
+  background: rgba(0,229,255,0.08); padding: 2px 7px; border-radius: 10px;
+}
+.ep-lock { display: flex; align-items: center; color: var(--muted); flex-shrink: 0; }
+
+/* Lista de ejercicios */
+.ep-exercises {
+  display: none; flex-direction: column;
+  padding: 4px 0; background: rgba(0,0,0,0.12); border-top: 1px solid var(--border);
+}
+.ep-exercises.open { display: flex; }
+
+.ep-exercise {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px 10px 36px;
+  cursor: pointer; font-size: 12px; font-weight: 500; color: var(--muted);
+  border-left: 3px solid transparent; line-height: 1.4;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ep-exercise:hover { background: rgba(0,229,255,0.05); color: var(--text); }
+.ep-exercise.active { background: rgba(0,229,255,0.08); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
+.ep-exercise.done { color: var(--accent3); }
+.ep-exercise.done .ep-ex-icon { color: var(--accent3); }
+.ep-exercise.done.active { background: rgba(16,185,129,0.08); border-left-color: var(--accent3); color: var(--accent3); }
+
+.ep-ex-icon { display: flex; align-items: center; flex-shrink: 0; color: var(--muted); }
+.ep-ex-name { flex: 1; }
+.ep-done-tag {
+  font-size: 10px; font-weight: 900; color: var(--accent3); flex-shrink: 0;
+  background: rgba(16,185,129,0.12); padding: 1px 6px;
+  border-radius: 8px; font-family: 'Space Mono', monospace;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PROGRESO
+══════════════════════════════════════════════════════════════ */
+.progress-header { margin-bottom: 28px; }
+.progress-header h2 { font-size: 26px; font-weight: 800; }
+.overall-progress {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; margin-bottom: 24px;
+}
+.op-label { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.op-value { font-size: 48px; font-weight: 800; color: var(--accent); }
+.overall-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.overall-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 1s; }
+
+.progress-list { display: flex; flex-direction: column; gap: 12px; }
+.progress-item {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.pi-icon { font-size: 24px; width: 40px; text-align: center; }
+.pi-info { flex: 1; }
+.pi-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.pi-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.pi-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.8s; }
+.pi-status { font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+.pi-status.done   { background: rgba(16,185,129,0.12); color: var(--accent3); }
+.pi-status.inprog { background: rgba(0,229,255,0.10);  color: var(--accent);  }
+.pi-status.todo   { background: rgba(107,107,128,0.12); color: var(--muted);  }
+
+/* Indicadores de nivel N1/N2/N3 en la pantalla Mi Progreso */
+.pi-levels { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.pi-lvl {
+  font-size: 10px; font-weight: 700; font-family: 'Space Mono', monospace;
+  padding: 2px 8px; border-radius: 4px;
+  background: rgba(107,107,128,0.12); color: var(--muted);
+  border: 1px solid var(--border); transition: all 0.3s;
+}
+.pi-lvl.done { background: rgba(16,185,129,0.12); color: var(--accent3); border-color: rgba(16,185,129,0.3); }
+
+/* ══════════════════════════════════════════════════════════════
+   UX — COMPONENTES GLOBALES
+══════════════════════════════════════════════════════════════ */
+
+/* Modal tutorial */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(4px); display: flex; align-items: center;
+  justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-box {
+  background: var(--surface); border: 1px solid var(--accent); border-radius: 16px;
+  padding: 32px; width: 450px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transform: translateY(20px); transition: transform 0.3s;
+}
+.modal-overlay.show .modal-box { transform: translateY(0); }
+.modal-box h3 { font-size: 22px; margin-bottom: 12px; color: var(--text); }
+.modal-box p { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.tutorial-list { text-align: left; list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.tutorial-list li { font-size: 13px; color: var(--text); display: flex; gap: 12px; align-items: flex-start; }
+.tutorial-list span { font-size: 18px; }
+
+/* Toasts */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--surface2); border: 1px solid var(--accent3);
+  border-radius: 10px; padding: 14px 20px; font-size: 13px; font-weight: 600; color: #6ee7b7;
+  transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 1000; pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* XP Badge */
+.xp-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+  padding: 6px 14px; border-radius: 20px; color: var(--warn);
+  font-weight: 700; font-size: 13px; margin-right: 12px;
+  user-select: none; transition: transform 0.2s, background 0.2s;
+}
+.xp-badge:hover { transform: scale(1.05); background: rgba(245,158,11,0.15); }
+.xp-badge svg { color: var(--warn); fill: rgba(245,158,11,0.2); }
+
+/* Botón inteligente de continuar */
+.continue-banner {
+  background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(124,58,237,0.08));
+  border: 1px solid var(--accent); border-radius: 12px; padding: 24px; margin-bottom: 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 8px 32px rgba(0,229,255,0.05); transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.continue-banner:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,229,255,0.1); }
+.continue-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  color: var(--accent); letter-spacing: 1px; margin-bottom: 6px; display: block;
+}
+.continue-banner h3 { font-size: 20px; font-weight: 700; color: var(--text); }
+.continue-btn { padding: 12px 24px; font-size: 14px; width: auto; margin: 0; }
+
+/* Empty State */
+.empty-state-guide {
+  display: none; background: rgba(0,229,255,0.05);
+  border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0;
+  padding: 16px 20px; margin-bottom: 24px;
+  align-items: flex-start; gap: 16px; animation: fadeIn 0.5s ease;
+}
+.empty-state-guide.show { display: flex; }
+.es-icon svg { color: var(--accent); width: 24px; height: 24px; }
+.es-text h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.es-text p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.es-text strong { color: var(--text); }
+
+/* Validación de contraseña en tiempo real */
+.password-rules {
+  list-style: none; margin-top: 10px; padding: 12px;
+  background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+  border-radius: 8px; display: none;
+}
+.password-rules li {
+  font-size: 11px; color: var(--muted); margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px; transition: color 0.3s ease;
+}
+.password-rules li:last-child { margin-bottom: 0; }
+.rule-icon { font-size: 10px; display: flex; align-items: center; }
+.password-rules li.valid { color: var(--text); }
+.password-rules li.valid .rule-icon { color: var(--accent3); }
+
+/* Video responsivo */
+.video-container {
+  position: relative; width: 100%; padding-bottom: 56.25%;
+  height: 0; border-radius: 12px; overflow: hidden; margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3); border: 1px solid var(--border);
+}
+.video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* ── CONSOLA DINÁMICA (CON MÁS AIRE) ── */
+.terminal-output {
+  margin: 20px 0; /* 20px arriba y abajo, 0 a los lados */
+  background-color: #0d1117;
+  border: 1px solid #30363d; 
+  border-radius: 6px; 
+  padding: 16px; /* Más espacio interno */
+  font-family: 'Courier New', Courier, monospace; 
+  font-size: 13px; 
+  color: #a5d6ff; 
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+/* Le damos espacio a los textos que aparecen antes de la consola */
+.feedback-box p {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.terminal-header {
+  font-size: 11px; color: #8b949e; margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 1px; user-select: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .username { display: none; }
+  .continue-banner { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .continue-btn { width: 100%; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMACIONES
+══════════════════════════════════════════════════════════════ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SCROLLBAR GLOBAL ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── AJUSTES PARA CODEMIRROR ── */
+.CodeMirror {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  height: 250px;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Arreglo extra para la terminal en modo claro (ya que tocaste el tema) */
+body.light-mode .terminal-output {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+body.light-mode .terminal-header { color: #64748b; }
+
+/* ── CUSTOM SELECT (MENÚ DE LENGUAJES) ── */
+select.lang-badge {
+  /* 1. Matamos el estilo del sistema operativo */
+  appearance: none; 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  
+  /* 2. Colores adaptables al tema (Claro/Oscuro) */
+  background-color: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  
+  /* 3. Espaciado (dejamos más espacio a la derecha para la flecha) */
+  padding: 4px 28px 4px 12px; 
+  
+  /* 4. Tipografía de programador */
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  
+  /* 5. Flecha SVG inyectada en el fondo */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%236b6b80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+/* Efectos al pasar el mouse y al hacer clic */
+select.lang-badge:hover {
+  border-color: var(--accent);
+  background-color: var(--surface);
+}
+
+select.lang-badge:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+/* Estilo de las opciones desplegadas */
+select.lang-badge option {
+  background-color: var(--surface);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════ */
+/* ── RESPONSIVIDAD BÁSICA (PANTALLAS PEQUEÑAS Y TABLETS) ── */
+/* ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 992px) {
+  /* 1. Vista de Lección: Apilamos el editor y el panel lateral uno sobre otro */
+  .lesson-body {
+    flex-direction: column;
+  }
+  
+  /* 2. El panel de Udemy (derecho) ahora toma todo el ancho */
+  .exercise-panel {
+    width: 100%;
+    max-width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border); /* Borde arriba en lugar de a la izquierda */
+  }
+
+  /* 3. Las tarjetas de inicio (Dashboard) pasan a tener menos columnas */
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  /* 4. En celulares o pantallas muy estrechas, las tarjetas se apilan en 1 sola columna */
+  .stats-grid, .topics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* 5. Ajustes de márgenes para ganar espacio valioso en la pantalla */
+  .content {
+    padding: 15px;
+  }
+  
+  .lesson-header h2 {
+    font-size: 20px;
+  }
+}
+
+/* ESTILOS DEL ONBOARDING INTERACTIVO */
+.tutorial-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.tutorial-dots .dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--muted);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.tutorial-dots .dot.active {
+  background-color: var(--accent);
+  width: 24px; /* Se estira para indicar el paso actual */
+  border-radius: 4px;
+}
+
+.tutorial-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+/* ── SISTEMA DE TOUR GUIADO (COACH MARKS) ── */
+.tour-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9998;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.tour-overlay.show { display: block; opacity: 1; }
+
+/* 1. Magia negra para romper la prisión del Z-Index */
+.nav:has(.tour-highlight),
+.dashboard-body:has(.tour-highlight),
+.content:has(.tour-highlight),
+.exercise-tab-bar:has(.tour-highlight) {
+    z-index: 9999 !important;
+}
+
+/* 2. El resplandor general */
+.tour-highlight {
+  position: relative !important;
+  z-index: 10000 !important;
+  background-color: var(--surface) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.8), 0 10px 30px rgba(0,0,0,0.8) !important;
+  pointer-events: none; 
+}
+
+/* 3. Excepciones para que no pierdan su color original */
+button.btn-run.tour-highlight {
+  background-color: #10b981 !important; 
+  color: white !important; 
+}
+
+.video-container.tour-highlight {
+  background-color: transparent !important; 
+}
+
+.topic-card.tour-highlight {
+  background-color: var(--surface2) !important;
+}
+
+.xp-badge.tour-highlight, .btn-icon-nav.tour-highlight {
+  background-color: var(--surface2) !important;
+}
+
+/* El cuadrito de texto que apunta al elemento */
+.tour-tooltip {
+  position: absolute;
+  z-index: 10000;
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 16px;
+  width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, top 0.3s ease, left 0.3s ease;
+}
+.tour-tooltip.show { display: block; opacity: 1; }
+.tour-tooltip h4 { margin-top: 0; margin-bottom: 8px; color: var(--accent); font-size: 15px; }
+.tour-tooltip p { margin: 0 0 16px 0; font-size: 13px; color: var(--text); line-height: 1.4; }
+.tour-actions { display: flex; justify-content: space-between; }
+.tour-actions button { padding: 6px 12px; font-size: 12px; }

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Learn — Plataforma Interactiva</title>
+  <link rel="stylesheet" href="estilos.css?v=2">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css">
+</head>
+<body>
+
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div class="screen active" id="loginScreen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">⬡</div>
+      <div class="logo-text">Data<span>Learn</span></div>
+    </div>
+    <h2>Bienvenido</h2>
+    <p>Ingresa tus credenciales para continuar aprendiendo</p>
+    <div class="login-error" id="loginError"></div>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"/>
+        <span class="toggle-password" onclick="togglePasswordVisibility('loginPass',this)"></span>
+      </div>
+    </div>
+    <div class="forgot-password">
+      <a href="#" onclick="showScreen('forgotScreen'); return false;">¿Olvidaste tu contraseña?</a>    </div>
+    <br>
+    <button class="btn-primary" id="btnLogin" onclick="handleLogin()">Iniciar sesión →</button>
+    <div class="login-divider">— o bien —</div>
+    <button class="btn-register" onclick="showScreen('registerScreen')">Crear cuenta nueva</button>
+  </div>
+</div>
+
+<!-- ══════════════════ REGISTRO ══════════════════ -->
+<div class="screen" id="registerScreen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">⬡</div>
+      <div class="logo-text">Data<span>Learn</span></div>
+    </div>
+    <h2>Crear cuenta</h2>
+    <p>Regístrate de forma segura para comenzar</p>
+    <div class="login-error" id="registerError"></div>
+    <div class="form-group">
+      <label>Usuario</label>
+      <input type="text" id="regUser" placeholder="Usuario" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="regPass" placeholder="Crea una contraseña segura" autocomplete="new-password"/>
+        <span class="toggle-password" onclick="togglePasswordVisibility('regPass',this)"></span>
+      </div>
+      <ul class="password-rules" id="passwordRules">
+        <li id="rule-length"><span class="rule-icon">○</span> Mínimo 8 caracteres</li>
+        <li id="rule-upper"><span class="rule-icon">○</span> Una letra mayúscula</li>
+        <li id="rule-lower"><span class="rule-icon">○</span> Una letra minúscula</li>
+        <li id="rule-number"><span class="rule-icon">○</span> Un número</li>
+        <li id="rule-special"><span class="rule-icon">○</span> Un carácter especial (!@#$%^&*_)</li>
+      </ul>
+    </div>
+    <div class="form-group">
+      <label>Confirmar contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="regPass2" placeholder="••••••••" autocomplete="new-password"/>
+        <span class="toggle-password" onclick="togglePasswordVisibility('regPass2',this)"></span>
+      </div>
+    </div>
+    <button class="btn-primary" id="btnRegister" onclick="handleRegister()">Registrarme →</button>
+    <div class="login-divider">— ¿Ya tienes cuenta? —</div>
+    <button class="btn-register" onclick="showScreen('loginScreen')">← Volver al login</button>
+  </div>
+</div>
+
+<!-- CAMBIAR CONTRASEÑA -->
+<div class="screen" id="forgotScreen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">⬡</div>
+      <div class="logo-text">Data<span>Learn</span></div>
+    </div>
+    <h2>Recuperar cuenta</h2>
+    <p>Ingresa tu usuario para restablecer tu contraseña.</p>
+    <div class="login-error" id="forgotError"></div>
+    
+    <div class="form-group">
+      <label>Usuario actual</label>
+      <input type="text" id="forgotUser" placeholder="Tu nombre de usuario" autocomplete="username"/>
+    </div>
+    
+    <div class="form-group">
+      <label>Nueva Contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="forgotPass" placeholder="Escribe tu nueva contraseña segura"/>
+        <span class="toggle-password" onclick="togglePasswordVisibility('forgotPass',this)"></span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Confirmar Nueva Contraseña</label>
+      <div class="password-wrapper">
+        <input type="password" id="forgotPass2" placeholder="••••••••"/>
+        <span class="toggle-password" onclick="togglePasswordVisibility('forgotPass2',this)"></span>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnForgot" onclick="handleResetPassword()">Restablecer Contraseña →</button>
+    <div class="login-divider">— o bien —</div>
+    <button class="btn-register" onclick="showScreen('loginScreen')">← Volver al login</button>
+  </div>
+</div>
+
+<!-- ══════════════════ DASHBOARD ══════════════════ -->
+<div class="screen" id="dashboardScreen">
+
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <!-- Botón hamburguesa + Logo (ambos en el mismo bloque izquierdo) -->
+    <div class="nav-left">
+      <!-- Heurística #7: atajo para colapsar/expandir sidebar sin abandonar la vista -->
+      <button class="btn-icon-nav" id="tour-nav-btn" onclick="toggleSidebar()" title="Mostrar/ocultar menú">
+        <span id="icon-menu"></span>
+      </button>
+      <!-- Logo clickeable → Dashboard (Heurística #6: reconocimiento, convención web) -->
+      <div class="nav-logo" onclick="goToDashboard()" title="Ir al inicio" style="cursor:pointer;">
+        ⬡ Data<span class="dot">Learn</span>
+      </div>
+    </div>
+
+    <div class="nav-user">
+      <button class="btn-icon-nav" onclick="toggleTheme()" title="Cambiar tema (Claro/Oscuro)">
+        <span id="icon-theme"></span>
+      </button>
+
+      <div class="xp-badge" id="tour-xp-box" title="Tus puntos de experiencia">
+        <span id="icon-fire"></span>
+        <span id="userXP">0 XP</span>
+      </div>
+      <div class="avatar" id="navAvatar">U</div>
+      <span class="username" id="navUsername">Usuario</span>
+      <button class="btn-logout" onclick="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-body">
+
+    <!-- ══ SIDEBAR COLAPSABLE ══ -->
+    <aside class="sidebar" id="mainSidebar">
+      <div class="sidebar-section-title">Navegación</div>
+      <div class="sidebar-item active" onclick="showView('homeView');setSidebarCollapsed(false);">
+        <span class="icon">⊞</span> Dashboard
+      </div>
+      <div class="sidebar-item" onclick="showView('progressView');setSidebarCollapsed(false);">
+        <span class="icon">◉</span> Mi Progreso
+      </div>
+
+      <div class="sidebar-section-title">Lineales</div>
+      <div class="sidebar-item" onclick="openLesson('matrices')">
+        <span class="icon">▦</span> Matrices
+        <span class="badge" id="badge-matrices">0%</span>
+      </div>
+      <div class="progress-mini"><div class="progress-mini-fill" id="mini-matrices" style="width:0%"></div></div>
+
+      <div class="sidebar-item" onclick="openLesson('pilas')">
+        <span class="icon">⊟</span> Pilas
+        <span class="badge" id="badge-pilas">0%</span>
+      </div>
+      <div class="progress-mini"><div class="progress-mini-fill" id="mini-pilas" style="width:0%"></div></div>
+
+      <div class="sidebar-item" onclick="openLesson('listas')">
+        <span class="icon">⊞</span> Listas
+        <span class="badge" id="badge-listas">0%</span>
+      </div>
+      <div class="progress-mini"><div class="progress-mini-fill" id="mini-listas" style="width:0%"></div></div>
+
+      <div class="sidebar-item" onclick="openLesson('colas')">
+        <span class="icon">⊠</span> Colas
+        <span class="badge" id="badge-colas">0%</span>
+      </div>
+      <div class="progress-mini"><div class="progress-mini-fill" id="mini-colas" style="width:0%"></div></div>
+
+      <div class="sidebar-section-title">No Lineales</div>
+      <div class="sidebar-item" onclick="openLesson('arboles')">
+        <span class="icon">⊕</span> Árboles
+        <span class="badge" id="badge-arboles">0%</span>
+      </div>
+      <div class="progress-mini"><div class="progress-mini-fill" id="mini-arboles" style="width:0%"></div></div>
+
+      <div class="sidebar-item" onclick="openLesson('grafos')">
+        <span class="icon">⊛</span> Grafos
+        <span class="badge" id="badge-grafos">0%</span>
+      </div>
+      <div class="progress-mini"><div class="progress-mini-fill" id="mini-grafos" style="width:0%"></div></div>
+    </aside>
+
+    <!-- ══ CONTENIDO CENTRAL ══ -->
+    <main class="content" id="mainContent">
+
+      <!-- VISTA: HOME -->
+      <div class="view active" id="homeView">
+        <div class="welcome-header">
+          <h1>Hola, <span id="welcomeName">alumno</span></h1>
+          <p>Sigue aprendiendo estructuras de datos. Cada ejercicio te acerca más al dominio total.</p>
+        </div>
+
+        <div class="continue-banner" id="continueBanner">
+          <div>
+            <span class="continue-label" id="continueLabel">Siguiente lección recomendada</span>
+            <h3 id="continueTitle">Matrices</h3>
+          </div>
+          <button class="btn-primary continue-btn" id="continueBtn" onclick="continueLesson()">Continuar →</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card green">
+            <div class="stat-label">Lecciones completadas</div>
+            <div class="stat-value" id="statDone">0</div>
+            <div class="stat-sub">de 6 temas</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Avance general</div>
+            <div class="stat-value" id="statPct">0%</div>
+            <div class="stat-sub">del curso total</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-label">Temas dominados</div>
+            <div class="stat-value" id="statExer">0</div>
+            <div class="stat-sub">completados al 100%</div>
+          </div>
+        </div>
+
+        <div class="empty-state-guide" id="emptyStateGuide">
+          <div class="es-icon" id="icon-compass"></div>
+          <div class="es-text">
+            <h4>¿No sabes por dónde empezar?</h4>
+            <p>Inicia con las <strong>estructuras lineales</strong>. Haz clic en <strong>Matrices</strong> aquí abajo para tu primera lección.</p>
+          </div>
+        </div>
+
+        <div class="section-title">Lineales</div>
+        <div class="topics-grid">
+          <div class="topic-card linear" id="tour-card-matrices" onclick="openLesson('matrices')">
+            <div class="topic-icon">▦</div>
+            <div class="topic-name">Matrices</div>
+            <div class="topic-progress-bar"><div class="topic-progress-fill" id="tp-matrices" style="width:0%"></div></div>
+            <div class="topic-progress-text" id="tpt-matrices">Sin iniciar</div>
+          </div>
+          <div class="topic-card linear" onclick="openLesson('pilas')">
+            <div class="topic-icon">⊟</div>
+            <div class="topic-name">Pilas</div>
+            <div class="topic-progress-bar"><div class="topic-progress-fill" id="tp-pilas" style="width:0%"></div></div>
+            <div class="topic-progress-text" id="tpt-pilas">Sin iniciar</div>
+          </div>
+          <div class="topic-card linear" onclick="openLesson('listas')">
+            <div class="topic-icon">⊞</div>
+            <div class="topic-name">Listas</div>
+            <div class="topic-progress-bar"><div class="topic-progress-fill" id="tp-listas" style="width:0%"></div></div>
+            <div class="topic-progress-text" id="tpt-listas">Sin iniciar</div>
+          </div>
+          <div class="topic-card linear" onclick="openLesson('colas')">
+            <div class="topic-icon">⊠</div>
+            <div class="topic-name">Colas</div>
+            <div class="topic-progress-bar"><div class="topic-progress-fill" id="tp-colas" style="width:0%"></div></div>
+            <div class="topic-progress-text" id="tpt-colas">Sin iniciar</div>
+          </div>
+        </div>
+
+        <div class="section-title">No Lineales</div>
+        <div class="topics-grid">
+          <div class="topic-card nolinear" onclick="openLesson('arboles')">
+            <div class="topic-icon">⊕</div>
+            <div class="topic-name">Árboles</div>
+            <div class="topic-progress-bar"><div class="topic-progress-fill" id="tp-arboles" style="width:0%"></div></div>
+            <div class="topic-progress-text" id="tpt-arboles">Sin iniciar</div>
+          </div>
+          <div class="topic-card nolinear" onclick="openLesson('grafos')">
+            <div class="topic-icon">⊛</div>
+            <div class="topic-name">Grafos</div>
+            <div class="topic-progress-bar"><div class="topic-progress-fill" id="tp-grafos" style="width:0%"></div></div>
+            <div class="topic-progress-text" id="tpt-grafos">Sin iniciar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ VISTA: LECCIÓN ══ -->
+      <div class="view" id="lessonView">
+
+        <!-- Cabecera de lección: solo volver + meta -->
+        <div class="lesson-header">
+          <button class="btn-back" onclick="backToHome()">← Volver</button>
+          <div class="lesson-meta">
+            <h2 id="lessonTitle">Tema</h2>
+            <p id="lessonSubtitle">Subtítulo</p>
+          </div>
+        </div>
+
+        <!-- Tabs de lección -->
+        <div class="lesson-tabs">
+          <button class="lesson-tab active" onclick="switchTab('videoTab',this)">Video</button>
+          <button class="lesson-tab" onclick="switchTab('theoryTab',this)">Teoría</button>
+          <button class="lesson-tab" onclick="switchTab('exerciseTab',this)">Ejercicio</button>
+        </div>
+
+        <!-- Layout lección: editor + panel derecho (flex) -->
+        <div class="lesson-body">
+
+          <!-- Zona central de contenido (video / teoría / editor) -->
+          <div class="lesson-center">
+
+            <!-- TAB: VIDEO -->
+            <div class="lesson-tab-content active" id="videoTab">
+              <div class="video-container" id="tour-video-box">
+                <iframe id="youtubePlayer" src="" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+              </div>
+              <div style="text-align:right; margin-bottom:24px;">
+                <button class="btn-primary" id="btnMarkVideo" onclick="markVideoWatched()"
+                  style="margin:0;width:auto;font-size:14px;padding:10px 20px;">
+                  ✓ Marcar video como visto
+                </button>
+              </div>
+              <div class="lesson-info-box">
+                <h4>Sobre este video</h4>
+                <p id="videoDesc"></p>
+              </div>
+            </div>
+
+            <!-- TAB: TEORÍA -->
+            <div class="lesson-tab-content" id="theoryTab">
+              <div class="lesson-info-box">
+                <h4 id="theoryTitle">Conceptos Clave</h4>
+                <p id="theoryContent"></p>
+              </div>
+              <div class="lesson-info-box">
+                <h4>Operaciones principales</h4>
+                <ul id="theoryOps"></ul>
+              </div>
+            </div>
+
+            <!-- TAB: EJERCICIO -->
+            <div class="lesson-tab-content" id="exerciseTab">
+
+              <!-- Barra del tab ejercicio con botón que abre el panel derecho -->
+              <!-- Heurística #1: el botón solo existe donde tiene sentido usarlo -->
+              <div class="exercise-tab-bar">
+                <span class="exercise-tab-bar-label" id="editorLangLabel">Editor de código — Python</span>
+                <button class="btn-toggle-panel" id="btnTogglePanel" onclick="togglePanel()" title="Mostrar/ocultar panel de ejercicios">
+                  <span id="icon-panel"></span>
+                  <span class="btn-toggle-panel-label">Ver ejercicios</span>
+                </button>
+              </div>
+
+              <!-- Enunciado del ejercicio activo -->
+              <div class="exercise-prompt">
+                <h4 id="exerciseLevelTitle">Nivel — Ejercicio</h4>
+                <p id="exercisePromptText">Selecciona un ejercicio del panel derecho para comenzar.</p>
+              </div>
+
+              <!-- Editor de código -->
+              <div class="code-editor-wrapper">
+                <div class="code-editor-bar">
+                  <div class="code-dot" style="background:#ef4444"></div>
+                  <div class="code-dot" style="background:#f59e0b"></div>
+                  <div class="code-dot" style="background:#10b981"></div>
+                  <span style="margin-left:10px;font-size:10px;color:#6b6b80;">Ctrl + Enter para ejecutar</span>
+                  <select id="langSelect" class="lang-badge" onchange="changeLanguage()">                    
+                    <option value="python">PYTHON</option>
+                    <option value="java">JAVA</option>
+                  </select>
+                </div>
+                <textarea class="code-input" id="codeInput"></textarea>
+              </div>
+
+              <div class="code-actions">
+                <button class="btn-run" id="tour-btn-run" onclick="evaluateCode()">▶ Ejecutar Código</button>
+                <button class="btn-clear" onclick="clearCode()">✕ Limpiar</button>
+              </div>
+
+              <div class="feedback-box" id="feedbackBox">
+                <div class="fb-icon" id="fbIcon"></div>
+                <div class="fb-title" id="fbTitle"></div>
+                <div id="fbMessage"></div>
+              </div>
+
+            </div>
+          </div><!-- /lesson-center -->
+
+          <!-- ══ PANEL DERECHO TIPO UDEMY ══
+               Se muestra solo cuando el tab activo es Ejercicio.
+               Heurística #1: siempre visible el estado de cada ejercicio.
+               Heurística #7: el alumno lo puede ocultar para más espacio. -->
+          <aside class="exercise-panel" id="exercisePanel">
+            <!-- Cabecera del panel con botón de cierre -->
+            <div class="ep-close-bar">
+              <span class="ep-close-title">Contenido</span>
+              <button class="ep-close-btn" onclick="hideLessonPanel()" title="Cerrar panel">✕</button>
+            </div>
+            <!-- Cuerpo generado por renderExercisePanel() en app.js -->
+            <div class="ep-body" id="exercisePanelBody"></div>
+          </aside>
+
+        </div><!-- /lesson-body -->
+      </div><!-- /lessonView -->
+
+      <!-- VISTA: PROGRESO -->
+      <div class="view" id="progressView">
+        <div class="progress-header">
+          <h2>Mi Progreso</h2>
+          <p>Estado actual de tus lecciones.</p>
+        </div>
+        <div class="overall-progress">
+          <div class="op-label">Avance total</div>
+          <div class="op-value" id="overallPct">0%</div>
+          <div class="overall-bar"><div class="overall-bar-fill" id="overallFill" style="width:0%"></div></div>
+        </div>
+        <div class="progress-list" id="progressList"></div>
+      </div>
+
+    </main><!-- /mainContent -->
+
+  </div><!-- /dashboard-body -->
+</div><!-- /dashboardScreen -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL TUTORIAL -->
+<div id="tourOverlay" class="tour-overlay"></div>
+<div id="tourTooltip" class="tour-tooltip">
+  <h4 id="tourTitle">Titulo</h4>
+  <p id="tourText">Texto explicativo</p>
+  <div class="tour-actions">
+    <button class="btn-clear" onclick="cerrarTour()">Saltar tour</button>
+    <button class="btn-primary" id="btnTourNext" onclick="siguientePasoTour()">Siguiente</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+
+<script src="app.js?v=1.1"></script>
+</body>
+</html>
