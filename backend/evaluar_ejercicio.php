@@ -1,5 +1,5 @@
 <?php
-// evaluar_ejercicio.php -> Analizador Estático con Consola Virtual y Niveles de Dificultad
+// evaluar_ejercicio.php -> Analizador Estático Multilenguaje con Consola Virtual
 require_once 'conexion_bd.php';
 session_start();
 header('Content-Type: application/json; charset=utf-8');
@@ -17,7 +17,7 @@ if ($metodo === 'POST') {
     $tema         = $datos['tema'] ?? '';
     $ejercicio_id = $datos['ejercicio_id'] ?? '';
     $codigo       = $datos['codigo'] ?? '';
-    $lenguaje     = $datos['lenguaje'] ?? 'python'; // <-- NUEVO
+    $lenguaje     = $datos['lenguaje'] ?? 'python';
     
     // Validaciones básicas (Heurística Nielsen #5: Prevención de errores)
     if (empty($ejercicio_id) || empty(trim($codigo))) {
@@ -25,7 +25,7 @@ if ($metodo === 'POST') {
         exit;
     }
 
-    if (strpos($codigo, 'pass') !== false) {
+    if (strpos($codigo, 'pass') !== false && $lenguaje === 'python') {
         echo json_encode(["exito" => false, "mensaje" => "Debes reemplazar la palabra 'pass' con tu propia lógica."]);
         exit;
     }
@@ -34,8 +34,11 @@ if ($metodo === 'POST') {
     $salida  = "";
 
     // =====================================================================
-    // ANALIZADOR ESTÁTICO — Evaluación por ID ÚNICO de Ejercicio
+    // ANALIZADOR ESTÁTICO — Evaluación Multilenguaje
+    // Familia C: Agrupa Java, C, C++, C# bajo reglas estructurales flexibles
     // =====================================================================
+    $es_familia_c = in_array($lenguaje, ['java', 'c', 'cpp', 'csharp']);
+
     switch ($ejercicio_id) {
 
         // ── MATRICES: NIVEL 1 ───────────────────────────────────────────
@@ -44,9 +47,9 @@ if ($metodo === 'POST') {
                 if (!preg_match('/def\s+obtener_elemento\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/return\s+/', $codigo)) $errores[] = "Usa 'return' para devolver el valor.";
                 if (!preg_match('/\[.*\]\[.*\]/', $codigo)) $errores[] = "Debes acceder usando dos índices [][].";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+obtenerElemento\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/return\s+[a-zA-Z0-9_]+\s*\[[^\]]+\]\s*\[[^\]]+\]\s*;/', $codigo)) $errores[] = "Debes retornar el elemento accediendo a la matriz con [][].";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/obtenerElemento\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/return\s+[a-zA-Z0-9_]+\s*\[[^\]]+\]\s*\[[^\]]+\]\s*;/i', $codigo)) $errores[] = "Debes retornar el elemento accediendo a la matriz con [][].";
             }
             break;
 
@@ -54,9 +57,9 @@ if ($metodo === 'POST') {
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+primera_fila\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\[0\]/', $codigo)) $errores[] = "Debes acceder al índice [0] de la matriz.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\[\]\s+primeraFila\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/return\s+[a-zA-Z0-9_]+\s*\[0\]\s*;/', $codigo)) $errores[] = "Debes retornar la matriz en su índice [0].";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/primeraFila\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/return\s+[a-zA-Z0-9_]+\s*\[0\]\s*;/i', $codigo)) $errores[] = "Debes retornar la matriz en su índice [0].";
             }
             break;
 
@@ -64,9 +67,9 @@ if ($metodo === 'POST') {
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+contar_filas\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/len\s*\(/', $codigo)) $errores[] = "Usa la función len() para contar las filas.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+contarFilas\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/\.length/', $codigo)) $errores[] = "Usa la propiedad .length para contar las filas.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/contarFilas\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.length|\.Length|\.size\(\)|sizeof/i', $codigo)) $errores[] = "Usa la propiedad de tamaño nativa de tu lenguaje para contar filas.";
             }
             break;
 
@@ -75,11 +78,11 @@ if ($metodo === 'POST') {
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+suma_diagonal\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/for\s+/', $codigo) && !preg_match('/while\s+/', $codigo)) $errores[] = "Necesitas un bucle (for o while) para iterar.";
-                if (!preg_match('/\[(.*?)\]\[\1\]/', $codigo) && !preg_match('/\[i\]\[i\]/', $codigo)) $errores[] = "Accede a los elementos de la diagonal usando el mismo índice, ej: [i][i].";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+sumaDiagonal\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/for\s*\(/', $codigo)) $errores[] = "Usa un bucle for para recorrer la matriz.";
-                if (!preg_match('/\[\s*[a-zA-Z0-9_]+\s*\]\s*\[\s*[a-zA-Z0-9_]+\s*\]/', $codigo)) $errores[] = "Debes acceder a los elementos usando doble corchete [i][i].";
+                if (!preg_match('/\[(.*?)\]\[\1\]/', $codigo) && !preg_match('/\[i\]\[i\]/', $codigo)) $errores[] = "Accede a la diagonal usando el mismo índice, ej: [i][i].";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/sumaDiagonal\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/for\s*\(/i', $codigo) && !preg_match('/while\s*\(/i', $codigo)) $errores[] = "Usa un bucle para recorrer la matriz.";
+                if (!preg_match('/\[\s*[a-zA-Z0-9_]+\s*\]\s*\[\s*[a-zA-Z0-9_]+\s*\]/i', $codigo)) $errores[] = "Accede a los elementos usando doble corchete [i][i].";
             }
             break;
 
@@ -87,10 +90,10 @@ if ($metodo === 'POST') {
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+suma_total\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (substr_count($codigo, 'for ') < 2 && substr_count($codigo, 'while ') < 2) $errores[] = "Necesitas dos bucles anidados para recorrer todas las celdas.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+sumaTotal\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (substr_count($codigo, 'for') < 2) $errores[] = "Necesitas dos bucles 'for' anidados en Java.";
-                if (!preg_match('/\+\=|\+\s*[a-zA-Z0-9_]+\[/', $codigo)) $errores[] = "Asegúrate de sumar acumulativamente cada valor al total.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/sumaTotal\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (substr_count(strtolower($codigo), 'for') < 2 && substr_count(strtolower($codigo), 'while') < 2) $errores[] = "Necesitas dos bucles anidados.";
+                if (!preg_match('/\+\=|\+\s*[a-zA-Z0-9_]+\[/i', $codigo)) $errores[] = "Asegúrate de sumar acumulativamente cada valor.";
             }
             break;
 
@@ -99,10 +102,10 @@ if ($metodo === 'POST') {
                 if (!preg_match('/def\s+buscar_en_matriz\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/==\s*valor/', $codigo)) $errores[] = "Debes comparar los elementos con el parámetro 'valor'.";
                 if (!preg_match('/return\s+True/', $codigo)) $errores[] = "Retorna True si encuentras el valor.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+buscarEnMatriz\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/==\s*valor/', $codigo)) $errores[] = "Debes comparar cada celda con el 'valor'.";
-                if (!preg_match('/return\s+true\s*;/', $codigo)) $errores[] = "Retorna true si encuentras el elemento.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/buscarEnMatriz\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/==\s*valor/i', $codigo)) $errores[] = "Debes comparar cada celda con el 'valor'.";
+                if (!preg_match('/return\s+(true|1)\s*;/i', $codigo)) $errores[] = "Retorna verdadero (true/1) si encuentras el elemento.";
             }
             break;
 
@@ -111,9 +114,9 @@ if ($metodo === 'POST') {
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+transponer\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/append\s*\(/', $codigo)) $errores[] = "Usa .append() para ir llenando la nueva matriz.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\[\]\[\]\s+transponer\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/\[[^\]]+\]\s*\[[^\]]+\]\s*=\s*[a-zA-Z0-9_]+\s*\[[^\]]+\]\s*\[[^\]]+\]/', $codigo)) $errores[] = "Debes asignar los valores de forma invertida, ej: resultado[j][i] = matriz[i][j].";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/transponer\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\[[^\]]+\]\s*\[[^\]]+\]\s*=\s*[a-zA-Z0-9_]+\s*\[[^\]]+\]\s*\[[^\]]+\]/i', $codigo)) $errores[] = "Asigna los valores invertidos, ej: resultado[j][i] = matriz[i][j].";
             }
             break;
 
@@ -121,9 +124,9 @@ if ($metodo === 'POST') {
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+maximo_por_fila\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/max\s*\(/', $codigo)) $errores[] = "Te recomiendo usar la función max() en cada fila.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\[\]\s+maximoPorFila\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
-                if (!preg_match('/Math\.max|>\s*[a-zA-Z0-9_]+/', $codigo)) $errores[] = "Compara los valores para encontrar el mayor (puedes usar Math.max o >).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/maximoPorFila\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/Math\.max|std::max|>\s*[a-zA-Z0-9_]+/i', $codigo)) $errores[] = "Compara los valores para encontrar el mayor.";
             }
             break;
 
@@ -132,22 +135,23 @@ if ($metodo === 'POST') {
                 if (!preg_match('/def\s+es_identidad\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/!=\s*1/', $codigo) && !preg_match('/!=\s*0/', $codigo)) $errores[] = "Debes verificar que la diagonal sea 1 y el resto 0.";
                 if (!preg_match('/return\s+False/', $codigo)) $errores[] = "Si alguna celda no cumple, retorna False inmediatamente.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esIdentidad\s*\(/', $codigo)) $errores[] = "No cambies la firma de la función.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esIdentidad\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/!=\s*1/', $codigo) && !preg_match('/!=\s*0/', $codigo)) $errores[] = "Verifica las condiciones de 1 (diagonal) y 0 (resto).";
-                if (!preg_match('/return\s+false\s*;/', $codigo)) $errores[] = "Retorna false si encuentras una irregularidad.";
+                if (!preg_match('/return\s+(false|0)\s*;/i', $codigo)) $errores[] = "Retorna falso (false/0) si encuentras una irregularidad.";
             }
             break;
 
-case 'pil_1_1': // Apilar y ver el tope
+        // ── PILAS: NIVEL 1 ──────────────────────────────────────────────
+        case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+ver_tope\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo)) $errores[] = "Usa .append() para apilar.";
                 if (!preg_match('/\[-1\]/', $codigo)) $errores[] = "Retorna el tope con [-1].";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+verTope\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.push\s*\(/', $codigo)) $errores[] = "Usa el método .push() de la clase Stack.";
-                if (!preg_match('/\.peek\s*\(\)/', $codigo)) $errores[] = "Retorna el elemento superior con .peek().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/verTope\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.push\s*\(|\.Push\s*\(|push_back/i', $codigo)) $errores[] = "Usa el método de empuje de tu estructura (push/push_back).";
+                if (!preg_match('/\.peek\s*\(\)|\.top\s*\(\)|\.Peek\s*\(\)|\[.*\]/i', $codigo)) $errores[] = "Retorna el elemento superior (peek/top).";
             }
             break;
 
@@ -155,9 +159,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+es_vacia\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/len\s*\(/', $codigo) && !preg_match('/not\s+pila/', $codigo)) $errores[] = "Verifica si el tamaño es 0.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esVacia\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.isEmpty\s*\(\)/', $codigo) && !preg_match('/\.size\s*\(\)\s*==\s*0/', $codigo)) $errores[] = "Usa el método .isEmpty() o verifica el size().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esVacia\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.isEmpty\s*\(\)|\.empty\s*\(\)|\.Count|size/i', $codigo)) $errores[] = "Verifica si la estructura está vacía.";
             }
             break;
 
@@ -165,9 +169,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+tamanio_pila\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/len\s*\(/', $codigo)) $errores[] = "Usa len() para el tamaño.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+tamanioPila\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.size\s*\(\)/', $codigo)) $errores[] = "Usa el método .size() de la pila.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/tamanioPila\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.size\s*\(\)|\.Count/i', $codigo)) $errores[] = "Usa el método de tamaño correspondiente.";
             }
             break;
 
@@ -176,9 +180,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+es_balanceada\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo) || !preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Debes usar append y pop.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esBalanceada\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.push\s*\(/', $codigo) || !preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Debes usar los métodos .push() y .pop().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esBalanceada\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.push\s*\(|push_back/i', $codigo) || !preg_match('/\.pop\s*\(\)/i', $codigo)) $errores[] = "Debes usar los métodos de apilar y desapilar.";
             }
             break;
 
@@ -187,10 +191,10 @@ case 'pil_1_1': // Apilar y ver el tope
                 if (!preg_match('/def\s+vaciar_pila\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/while\s+/', $codigo)) $errores[] = "Usa un while para extraer hasta que esté vacía.";
                 if (!preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Asegúrate de usar .pop() para extraer.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/List<Integer>\s+vaciarPila\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/while\s*\(/', $codigo)) $errores[] = "Usa un ciclo while.";
-                if (!preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Extrae y guarda los valores usando .pop().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/vaciarPila\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/while\s*\(/i', $codigo)) $errores[] = "Usa un ciclo while.";
+                if (!preg_match('/\.pop\s*\(\)/i', $codigo)) $errores[] = "Extrae y guarda los valores usando pop().";
             }
             break;
 
@@ -198,9 +202,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+invertir_lista\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo) || !preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Usa la pila para invertir el orden (append y pop).";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\[\]\s+invertirArreglo\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.push\s*\(/', $codigo) || !preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Usa la pila para invertir (push y pop).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/invertirArreglo\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.push\s*\(|\.Push\s*\(|push_back/i', $codigo) || !preg_match('/\.pop\s*\(\)/i', $codigo)) $errores[] = "Usa la pila para invertir (push y pop).";
             }
             break;
 
@@ -209,9 +213,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+invertir_cadena\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo) || !preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Mete los caracteres a la pila y sácalos con pop().";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/String\s+invertirCadena\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.push\s*\(/', $codigo) || !preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Mete los caracteres y sácalos (ideal usar StringBuilder).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/invertirCadena\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.push\s*\(|push_back/i', $codigo) || !preg_match('/\.pop\s*\(\)/i', $codigo)) $errores[] = "Mete los caracteres y sácalos.";
             }
             break;
 
@@ -219,9 +223,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+simular_undo\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Usa .pop() para deshacer.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Stack<String>\s+simularUndo\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Debes llamar .pop() n veces.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/simularUndo\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.pop\s*\(\)/i', $codigo)) $errores[] = "Debes llamar pop() n veces.";
             }
             break;
 
@@ -229,9 +233,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+evaluar_postfija\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Saca operandos con pop() cuando detectes un operador.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+evaluarPostfija\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.pop\s*\(\)/', $codigo)) $errores[] = "Haz pop() a dos números cuando detectes un operador + - * /";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/evaluarPostfija\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.pop\s*\(\)/i', $codigo)) $errores[] = "Extrae los números cuando detectes un operador + - * /";
             }
             break;
 
@@ -241,10 +245,10 @@ case 'pil_1_1': // Apilar y ver el tope
                 if (!preg_match('/def\s+imprimir_lista\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/while\s+/', $codigo)) $errores[] = "Usa un bucle 'while' para recorrer los nodos.";
                 if (!preg_match('/\.siguiente/', $codigo)) $errores[] = "Debes avanzar al siguiente nodo usando '.siguiente'.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/void\s+imprimirLista\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/while\s*\(/', $codigo)) $errores[] = "Usa un bucle while.";
-                if (!preg_match('/\.siguiente/', $codigo)) $errores[] = "Avanza el puntero con actual = actual.siguiente.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/imprimirLista\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/while\s*\(/i', $codigo)) $errores[] = "Usa un bucle while.";
+                if (!preg_match('/(->|\.)siguiente/i', $codigo)) $errores[] = "Avanza el puntero al siguiente nodo.";
             }
             break;
 
@@ -252,9 +256,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+obtener_primero\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.valor/', $codigo)) $errores[] = "Accede al dato del nodo usando '.valor'.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+obtenerPrimero\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.valor/', $codigo)) $errores[] = "Retorna cabeza.valor.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/obtenerPrimero\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/(->|\.)valor/i', $codigo)) $errores[] = "Retorna el valor de la cabeza.";
             }
             break;
 
@@ -262,9 +266,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+es_lista_vacia\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/None/', $codigo)) $errores[] = "Compara la cabeza directamente con 'None'.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esListaVacia\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/null/', $codigo)) $errores[] = "Compara la cabeza directamente con null.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esListaVacia\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/null|NULL|nullptr/i', $codigo)) $errores[] = "Compara la cabeza directamente con nulo.";
             }
             break;
 
@@ -274,10 +278,10 @@ case 'pil_1_1': // Apilar y ver el tope
                 if (!preg_match('/def\s+contar_nodos\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/while\s+/', $codigo)) $errores[] = "Usa un bucle 'while'.";
                 if (!preg_match('/\.siguiente/', $codigo)) $errores[] = "Avanza el puntero con '.siguiente'.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+contarNodos\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/while\s*\(/', $codigo)) $errores[] = "Usa un bucle while para contar.";
-                if (!preg_match('/\.siguiente/', $codigo)) $errores[] = "Asegúrate de avanzar al siguiente nodo.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/contarNodos\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/while\s*\(/i', $codigo)) $errores[] = "Usa un bucle while para contar.";
+                if (!preg_match('/(->|\.)siguiente/i', $codigo)) $errores[] = "Asegúrate de avanzar al siguiente nodo.";
             }
             break;
 
@@ -286,10 +290,10 @@ case 'pil_1_1': // Apilar y ver el tope
                 if (!preg_match('/def\s+buscar_valor\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/while\s+/', $codigo)) $errores[] = "Necesitas un 'while' para revisar cada nodo.";
                 if (!preg_match('/\.valor/', $codigo)) $errores[] = "Compara tu objetivo con el atributo '.valor'.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+buscarValor\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/while\s*\(/', $codigo)) $errores[] = "Usa while para recorrer.";
-                if (!preg_match('/\.valor/', $codigo)) $errores[] = "Verifica actual.valor contra el objetivo.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/buscarValor\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/while\s*\(/i', $codigo)) $errores[] = "Usa while para recorrer.";
+                if (!preg_match('/(->|\.)valor/i', $codigo)) $errores[] = "Verifica el valor contra el objetivo.";
             }
             break;
 
@@ -297,9 +301,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+obtener_ultimo\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/while\s+.*\.siguiente/', $codigo)) $errores[] = "El bucle debe detenerse cuando '.siguiente' sea None.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+obtenerUltimo\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.siguiente\s*!=\s*null/', $codigo)) $errores[] = "Detén el ciclo cuando actual.siguiente sea null.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/obtenerUltimo\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/(->|\.)siguiente\s*!=\s*(null|NULL|nullptr)/i', $codigo)) $errores[] = "Detén el ciclo cuando el siguiente sea nulo.";
             }
             break;
 
@@ -308,9 +312,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+sumar_lista\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\+\=/', $codigo) && !preg_match('/total\s*\=\s*total\s*\+/', $codigo)) $errores[] = "Suma acumulativamente el '.valor' de cada nodo.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+sumarLista\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\+\=|\+\s*actual\.valor/', $codigo)) $errores[] = "Suma el valor del nodo actual a tu variable total.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/sumarLista\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\+\=|\+\s*[a-zA-Z0-9_]+(->|\.)valor/i', $codigo)) $errores[] = "Suma el valor del nodo actual a tu variable total.";
             }
             break;
 
@@ -318,9 +322,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+a_lista_python\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo)) $errores[] = "Usa .append() para guardar cada '.valor' en tu nueva lista.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/List<Integer>\s+aLista\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Usa res.add(actual.valor) para guardar los valores.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/aLista\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.add\s*\(|\.Add\s*\(|\.push_back\s*\(/i', $codigo)) $errores[] = "Guarda los valores en la colección de retorno.";
             }
             break;
 
@@ -328,20 +332,20 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+tiene_duplicados\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/in\s+vistos/', $codigo) && !preg_match('/append\s*\(/', $codigo)) $errores[] = "Lleva un registro de los valores 'vistos'.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+tieneDuplicados\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.contains\s*\(/', $codigo) && !preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Lleva un control con un HashSet (métodos .contains o .add).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/tieneDuplicados\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.contains\s*\(|\.Contains\s*\(|\.add\s*\(|\.insert\s*\(/i', $codigo)) $errores[] = "Lleva un control de vistos con HashSet o similar.";
             }
             break;
 
-// ── COLAS: NIVEL 1 ──────────────────────────────────────────────
+        // ── COLAS: NIVEL 1 ──────────────────────────────────────────────
         case 'col_1_1': // Crear y encolar
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+crear_cola\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo)) $errores[] = "Usa .append() de deque.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Queue<String>\s+crearCola\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.add\s*\(|\.offer\s*\(/', $codigo)) $errores[] = "Usa .add() o .offer() en la cola.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/crearCola\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.add\s*\(|\.offer\s*\(|\.push\s*\(|\.Enqueue\s*\(/i', $codigo)) $errores[] = "Usa el método de encolar nativo.";
             }
             break;
 
@@ -349,9 +353,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+es_cola_vacia\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/len\s*\(/', $codigo) && !preg_match('/not\s+cola/', $codigo)) $errores[] = "Verifica si la cola tiene tamaño 0.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esColaVacia\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.isEmpty\s*\(\)/', $codigo)) $errores[] = "Usa .isEmpty().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esColaVacia\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.isEmpty\s*\(\)|\.empty\s*\(\)|\.Count|size/i', $codigo)) $errores[] = "Usa el método correspondiente para revisar si está vacía.";
             }
             break;
 
@@ -359,9 +363,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+ver_frente\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\[0\]/', $codigo)) $errores[] = "Usa el índice [0] para ver el frente.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/String\s+verFrente\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.peek\s*\(\)/', $codigo) && !preg_match('/\.element\s*\(\)/', $codigo)) $errores[] = "Usa .peek() o .element().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/verFrente\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.peek\s*\(\)|\.element\s*\(\)|\.front\s*\(\)|\.Peek\s*\(\)/i', $codigo)) $errores[] = "Usa el método que expone el primer elemento.";
             }
             break;
 
@@ -370,9 +374,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+simular_atencion\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.popleft\s*\(\)/', $codigo)) $errores[] = "Usa .popleft() para extraer.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/List<String>\s+simularAtencion\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.poll\s*\(\)/', $codigo) && !preg_match('/\.remove\s*\(\)/', $codigo)) $errores[] = "Usa .poll() o .remove() para extraer del frente.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/simularAtencion\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.poll\s*\(\)|\.remove\s*\(\)|\.pop\s*\(\)|\.Dequeue\s*\(\)/i', $codigo)) $errores[] = "Usa el método para extraer del frente.";
             }
             break;
 
@@ -380,9 +384,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+tamanio_cola\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/len\s*\(/', $codigo)) $errores[] = "Usa len().";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+tamanioCola\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.size\s*\(\)/', $codigo)) $errores[] = "Usa .size().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/tamanioCola\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.size\s*\(\)|\.Count/i', $codigo)) $errores[] = "Retorna el tamaño de la colección.";
             }
             break;
 
@@ -390,9 +394,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+transferir\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.popleft\s*\(\)/', $codigo) || !preg_match('/\.append\s*\(/', $codigo)) $errores[] = "Usa popleft() y append().";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Queue<Integer>\s+transferir\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.poll\s*\(\)|\.remove\s*\(\)/', $codigo) || !preg_match('/\.add\s*\(|\.offer\s*\(/', $codigo)) $errores[] = "Saca de una cola (poll/remove) y mete a la otra (add/offer).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/transferir\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.poll|\.remove|\.pop|\.Dequeue/i', $codigo) || !preg_match('/\.add|\.offer|\.push|\.Enqueue/i', $codigo)) $errores[] = "Saca de una cola y mete a la otra.";
             }
             break;
 
@@ -401,9 +405,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+cola_prioritaria\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/sorted\s*\(/', $codigo) || !preg_match('/reverse\s*=\s*True/', $codigo)) $errores[] = "Usa sorted() con reverse=True.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/PriorityQueue<Integer>\s+colaPrioritaria\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.addAll\s*\(/', $codigo) && !preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Añade los elementos a la PriorityQueue.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/colaPrioritaria\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.addAll\s*\(|\.add\s*\(|\.push\s*\(|\.Enqueue/i', $codigo)) $errores[] = "Añade los elementos a tu Cola de Prioridad.";
             }
             break;
 
@@ -411,9 +415,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+buffer_circular\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/maxlen\s*=/', $codigo)) $errores[] = "Usa maxlen en deque para el buffer.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Queue<Integer>\s+bufferCircular\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.size\s*\(\)/', $codigo) || !preg_match('/\.poll\s*\(\)/', $codigo)) $errores[] = "Verifica el size() y haz poll() si se llena la capacidad.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/bufferCircular\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.size\s*\(\)|\.Count/i', $codigo) || !preg_match('/\.poll\s*\(\)|\.pop\s*\(\)|\.Dequeue\s*\(\)/i', $codigo)) $errores[] = "Verifica el tamaño y elimina el más viejo si se llena.";
             }
             break;
 
@@ -421,9 +425,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+rotar_cola\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.append\s*\(/', $codigo) || !preg_match('/\.popleft\s*\(\)/', $codigo)) $errores[] = "Haz append() del resultado de popleft().";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Queue<Integer>\s+rotarCola\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.add\s*\(/', $codigo) || !preg_match('/\.poll\s*\(\)/', $codigo)) $errores[] = "Haz add() de lo que devuelva poll().";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/rotarCola\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.add|\.push|\.Enqueue/i', $codigo) || !preg_match('/\.poll|\.pop|\.Dequeue/i', $codigo)) $errores[] = "Añade al final lo que saques del principio.";
             }
             break;
 
@@ -432,9 +436,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+crear_arbol\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.izq\s*=/', $codigo) || !preg_match('/\.der\s*=/', $codigo)) $errores[] = "Asigna valores a .izq y .der.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/NodoArbol\s+crearArbol\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.izq\s*=/', $codigo) || !preg_match('/\.der\s*=/', $codigo)) $errores[] = "Asigna los hijos izq y der.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/crearArbol\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/(->|\.)izq\s*=/i', $codigo) || !preg_match('/(->|\.)der\s*=/i', $codigo)) $errores[] = "Asigna los hijos izq y der.";
             }
             break;
 
@@ -442,9 +446,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+es_arbol_vacio\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/is\s+None|==\s*None/', $codigo)) $errores[] = "Compara la raíz con None.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esArbolVacio\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/==\s*null/', $codigo)) $errores[] = "Compara la raíz con null.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esArbolVacio\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/==\s*(null|NULL|nullptr)/i', $codigo)) $errores[] = "Compara la raíz con nulo.";
             }
             break;
 
@@ -452,9 +456,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+es_hoja\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.izq/', $codigo) || !preg_match('/\.der/', $codigo)) $errores[] = "Verifica tanto .izq como .der.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+esHoja\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.izq\s*==\s*null/', $codigo) || !preg_match('/\.der\s*==\s*null/', $codigo)) $errores[] = "Verifica que izq y der sean null.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/esHoja\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/(->|\.)izq\s*==\s*(null|NULL|nullptr)/i', $codigo) || !preg_match('/(->|\.)der\s*==\s*(null|NULL|nullptr)/i', $codigo)) $errores[] = "Verifica que izq y der sean nulos.";
             }
             break;
 
@@ -463,9 +467,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+calcular_altura\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/max\s*\(/', $codigo)) $errores[] = "Usa max() para la mayor altura de los subárboles.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+calcularAltura\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/Math\.max\s*\(/', $codigo)) $errores[] = "Usa Math.max() para los subárboles.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/calcularAltura\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/max\s*\(/i', $codigo)) $errores[] = "Usa el método max() de tu lenguaje.";
             }
             break;
 
@@ -473,9 +477,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+contar_nodos\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\+\s*1|1\s*\+/', $codigo)) $errores[] = "Suma 1 por el nodo actual.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+contarNodos\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/1\s*\+/', $codigo)) $errores[] = "Asegúrate de sumar 1 por la raíz.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/contarNodos\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/1\s*\+/i', $codigo) && !preg_match('/\+\s*1/i', $codigo)) $errores[] = "Asegúrate de sumar 1 por la raíz actual.";
             }
             break;
 
@@ -483,9 +487,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+buscar_en_arbol\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/==\s*objetivo/', $codigo)) $errores[] = "Compara el valor con el objetivo.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+buscarEnArbol\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/==\s*objetivo/', $codigo)) $errores[] = "Compara el valor de la raíz con el objetivo.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/buscarEnArbol\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/==\s*objetivo/i', $codigo)) $errores[] = "Compara el valor de la raíz con el objetivo.";
             }
             break;
 
@@ -494,9 +498,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+inorden\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.izq/', $codigo) || !preg_match('/\.der/', $codigo)) $errores[] = "Llama a la recursión para izq y der.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/void\s+inorden\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Añade el valor a la lista res.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/inorden\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.add\s*\(|\.push_back\s*\(|\.Add\s*\(/i', $codigo)) $errores[] = "Añade el valor a la colección resultado.";
             }
             break;
 
@@ -504,9 +508,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+preorden\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.izq/', $codigo) || !preg_match('/\.der/', $codigo)) $errores[] = "Llama a la recursión para izq y der.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/void\s+preorden\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Añade el valor a la lista res.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/preorden\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.add\s*\(|\.push_back\s*\(|\.Add\s*\(/i', $codigo)) $errores[] = "Añade el valor a la colección resultado.";
             }
             break;
 
@@ -514,9 +518,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+suma_arbol\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.valor\s*\+/', $codigo) && !preg_match('/\+\s*[^.]*\.valor/', $codigo)) $errores[] = "Suma el valor actual.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+sumaArbol\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.valor/', $codigo)) $errores[] = "Asegúrate de sumar raiz.valor.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/sumaArbol\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/(->|\.)valor/i', $codigo)) $errores[] = "Asegúrate de sumar el valor de la raíz actual.";
             }
             break;
 
@@ -525,9 +529,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+crear_grafo\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\{|\= dict/', $codigo)) $errores[] = "Usa un diccionario {}.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Map<String,\s*List<String>>\s+crearGrafo\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.put\s*\(/', $codigo)) $errores[] = "Usa .put() para agregar nodos y vecinos.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/crearGrafo\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.put\s*\(|\.Add\s*\(|\[.*?\]\s*=/i', $codigo)) $errores[] = "Asigna vecinos al diccionario/mapa de tu lenguaje.";
             }
             break;
 
@@ -535,9 +539,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+obtener_vecinos\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.get\s*\(/', $codigo) && !preg_match('/\[nodo\]/', $codigo)) $errores[] = "Extrae el nodo del diccionario.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/List<String>\s+obtenerVecinos\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.getOrDefault\s*\(/', $codigo) && !preg_match('/\.get\s*\(/', $codigo)) $errores[] = "Extrae los vecinos usando .getOrDefault o .get.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/obtenerVecinos\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.getOrDefault\s*\(|\.get\s*\(|\[.*?\]|\.GetValueOrDefault\s*\(/i', $codigo)) $errores[] = "Extrae los vecinos de la estructura.";
             }
             break;
 
@@ -545,9 +549,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+contar_nodos_grafo\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/len\s*\(/', $codigo)) $errores[] = "Usa len().";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+contarNodos\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.size\s*\(\)/', $codigo)) $errores[] = "Usa el método .size() del Map.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/contarNodos\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.size\s*\(\)|\.Count/i', $codigo)) $errores[] = "Devuelve el tamaño del grafo.";
             }
             break;
 
@@ -557,10 +561,9 @@ case 'pil_1_1': // Apilar y ver el tope
                 if (!preg_match('/def\s+recorrido_bfs\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/while\s+cola/', $codigo)) $errores[] = "Usa un while para vaciar la cola.";
                 if (!preg_match('/\.pop\s*\(0\)/', $codigo) && !preg_match('/\.popleft\s*\(\)/', $codigo)) $errores[] = "Extrae del frente de la cola.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/List<String>\s+recorridoBFS\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.poll\s*\(\)/', $codigo)) $errores[] = "Usa .poll() para sacar de la cola.";
-                if (!preg_match('/while\s*\(/', $codigo)) $errores[] = "Usa un ciclo while para la cola.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/recorridoBFS\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.poll\s*\(\)|\.pop\s*\(\)|\.Dequeue\s*\(\)/i', $codigo)) $errores[] = "Saca de la cola en tu ciclo while.";
             }
             break;
 
@@ -568,9 +571,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+nodos_alcanzables\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Añade a tu 'set' de visitados.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/Set<String>\s+nodosAlcanzables\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.add\s*\(/', $codigo)) $errores[] = "Añade los nodos al Set de visitados.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/nodosAlcanzables\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.add\s*\(|\.insert\s*\(|\.Add\s*\(/i', $codigo)) $errores[] = "Añade los nodos a tu Set/colección de visitados.";
             }
             break;
 
@@ -578,9 +581,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+existe_camino\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/==\s*destino/', $codigo)) $errores[] = "Compara el nodo actual con el destino.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+existeCamino\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.equals\s*\(/', $codigo) && !preg_match('/==\s*destino/', $codigo)) $errores[] = "Compara el nodo actual con el destino (usa .equals en Strings).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/existeCamino\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.equals\s*\(|==\s*destino/i', $codigo)) $errores[] = "Compara el nodo actual con el destino.";
             }
             break;
 
@@ -589,9 +592,9 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+recorrido_dfs\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/recorrido_dfs\s*\(/', $codigo)) $errores[] = "Asegúrate de hacer la llamada recursiva a recorrido_dfs.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/void\s+recorridoDFS\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/recorridoDFS\s*\(/', $codigo)) $errores[] = "Asegúrate de hacer la llamada recursiva.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/recorridoDFS\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/recorridoDFS\s*\(/i', $codigo)) $errores[] = "Asegúrate de hacer la llamada recursiva.";
             }
             break;
 
@@ -599,19 +602,19 @@ case 'pil_1_1': // Apilar y ver el tope
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+contar_componentes\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
                 if (!preg_match('/dfs\s*\(/', $codigo)) $errores[] = "Debes llamar a la función dfs interna.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/int\s+contarComponentes\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/\.keySet\s*\(\)/', $codigo)) $errores[] = "Itera sobre las llaves del grafo (grafo.keySet()).";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/contarComponentes\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/\.keySet\s*\(\)|\.Keys|\.first/i', $codigo)) $errores[] = "Itera sobre las llaves/nodos del grafo.";
             }
             break;
 
         case 'gra_3_3': // Detectar ciclo
             if ($lenguaje === 'python') {
                 if (!preg_match('/def\s+tiene_ciclo\s*\(/', $codigo)) $errores[] = "No cambies el nombre de la función.";
-                if (!preg_match('/!=\s*padre/', $codigo)) $errores[] = "Asegúrate de validar que el vecino visitado no sea el padre inmediato.";
-            } elseif ($lenguaje === 'java') {
-                if (!preg_match('/boolean\s+tieneCiclo\s*\(/', $codigo)) $errores[] = "No cambies la firma del método.";
-                if (!preg_match('/return\s+true/', $codigo)) $errores[] = "Debes retornar true si detectas el ciclo en el DFS.";
+                if (!preg_match('/!=\s*padre/', $codigo)) $errores[] = "Valida que el vecino visitado no sea el padre.";
+            } elseif ($es_familia_c) {
+                if (!preg_match('/tieneCiclo\s*\(/i', $codigo)) $errores[] = "No cambies el nombre de la función.";
+                if (!preg_match('/return\s+(true|1)/i', $codigo)) $errores[] = "Retorna verdadero al detectar el ciclo.";
             }
             break;
     }
