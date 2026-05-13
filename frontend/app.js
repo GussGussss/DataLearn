@@ -1526,6 +1526,7 @@ if(regPassInput){
 
 function changeLanguage() {
   currentLang = document.getElementById('langSelect').value;
+  localStorage.setItem('dl_currentLang', currentLang); // <-- Memoria añadida
 
   // Nombres bonitos para el título
   const nombres = {
