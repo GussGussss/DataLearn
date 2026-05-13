@@ -919,36 +919,55 @@ function selectExercise(li, ei) {
   loadExercise(li, ei); renderExercisePanel();
 }
 
-// ── TRADUCTOR DE INSTRUCCIONES (UX) ──
 function formatEnunciado(texto, lang) {
-  if (lang !== 'java') return texto;
-  // 1. Pasa funciones de snake_case a camelCase (ej. primera_fila() -> primeraFila())
+  if (lang === 'python') return texto;
+  
+  // 1. Pasa funciones de snake_case a camelCase para lenguajes tipo C
   let formateado = texto.replace(/\b[a-z]+(?:_[a-z]+)+(?=\()/g, match => {
     return match.split('_').map((word, i) => i === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)).join('');
   });
-  // 2. Traduce palabras reservadas
-  return formateado.replace(/\bTrue\b/g, 'true')
-                   .replace(/\bFalse\b/g, 'false')
-                   .replace(/\bNone\b/g, 'null')
-                   .replace(/\blen\(\)/g, '.length / .size()');
+  
+  // 2. Traducciones específicas
+  if (lang === 'java' || lang === 'csharp' || lang === 'cpp') {
+      formateado = formateado.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false');
+  }
+  if (lang === 'c') {
+      formateado = formateado.replace(/\bTrue\b/g, '1').replace(/\bFalse\b/g, '0');
+  }
+  
+  // Nulos
+  if (lang === 'java' || lang === 'csharp') formateado = formateado.replace(/\bNone\b/g, 'null');
+  if (lang === 'cpp' || lang === 'c') formateado = formateado.replace(/\bNone\b/g, 'NULL');
+  
+  // Tamaños
+  if (lang === 'java') formateado = formateado.replace(/\blen\(\)/g, '.length o .size()');
+  if (lang === 'csharp') formateado = formateado.replace(/\blen\(\)/g, '.Length o .Count');
+  if (lang === 'cpp') formateado = formateado.replace(/\blen\(\)/g, '.size()');
+  if (lang === 'c') formateado = formateado.replace(/\blen\(\)/g, 'sizeof()');
+
+  return formateado;
 }
 
 function loadExercise(li, ei) {
   const nivel = TOPICS[currentLesson].niveles[li], ej = nivel.ejercicios[ei];
   document.getElementById('exerciseLevelTitle').textContent = `${nivel.titulo} — ${ej.nombre}`;
 
-  // Aplicamos el traductor dinámico al texto
   document.getElementById('exercisePromptText').textContent = formatEnunciado(ej.enunciado, currentLang);
 
-  // Actualizar el título sobre el editor
-  const langName = currentLang === 'java' ? 'Java' : 'Python';
-  document.getElementById('editorLangLabel').textContent = `Editor de código — ${langName}`;
+  const nombres = {'python': 'Python', 'java': 'Java', 'c': 'C', 'cpp': 'C++', 'csharp': 'C#'};
+  document.getElementById('editorLangLabel').textContent = `Editor de código — ${nombres[currentLang]}`;
+
+  // Buscar el starter dinámicamente
+  let starterCode = ej.starter; // default Python
+  if (currentLang === 'java' && ej.starter_java) starterCode = ej.starter_java;
+  if (currentLang === 'c' && ej.starter_c) starterCode = ej.starter_c;
+  if (currentLang === 'cpp' && ej.starter_cpp) starterCode = ej.starter_cpp;
+  if (currentLang === 'csharp' && ej.starter_csharp) starterCode = ej.starter_csharp;
 
   if (codeEditor) {
-    const starterCode = (currentLang === 'java' && ej.starter_java) ? ej.starter_java : ej.starter;
     codeEditor.setValue(starterCode);
   } else {
-    document.getElementById('codeInput').value = ej.starter;
+    document.getElementById('codeInput').value = starterCode;
   }
 
   document.getElementById('feedbackBox').style.display = 'none';
@@ -1106,6 +1125,14 @@ async function evaluateCode() {
   let salidaReal = "";
   let huboErrorEjecucion = false;
 
+  // ── MAPA DE IDs DE JUDGE0 CE ──
+  const judge0_ids = {
+      'java': 62,
+      'c': 50,       // GCC 9.2.0
+      'cpp': 54,     // GCC 9.2.0
+      'csharp': 51   // Mono 6.6.0
+  };
+
   if (currentLang === 'python') {
     Sk.configure({
       output: function(texto) { salidaReal += texto; },
@@ -1120,8 +1147,9 @@ async function evaluateCode() {
       salidaReal = err.toString();
       huboErrorEjecucion = true;
     }
-  } else if (currentLang === 'java') {
-    salidaReal = await executeRemote(code, 62);
+  } else {
+    // Si no es Python, viaja a la nube con su respectivo ID
+    salidaReal = await executeRemote(code, judge0_ids[currentLang]);
     if (salidaReal.includes("ERROR")) huboErrorEjecucion = true;
   }
 
@@ -1193,8 +1221,12 @@ function advanceToNext() {
 function clearCode() {
   const ej=TOPICS[currentLesson]?.niveles[currentLevelIdx]?.ejercicios[currentExerciseIdx];
   if (codeEditor) {
-    const starterCode = (currentLang === 'java' && ej?.starter_java) ? ej.starter_java : (ej?.starter || '');
-    codeEditor.setValue(starterCode);
+      let starterCode = ej.starter; 
+      if (currentLang === 'java' && ej.starter_java) starterCode = ej.starter_java;
+      if (currentLang === 'c' && ej.starter_c) starterCode = ej.starter_c;
+      if (currentLang === 'cpp' && ej.starter_cpp) starterCode = ej.starter_cpp;
+      if (currentLang === 'csharp' && ej.starter_csharp) starterCode = ej.starter_csharp;
+      codeEditor.setValue(starterCode);
   }
   document.getElementById('feedbackBox').style.display='none';
   showToast('Código reiniciado.');
@@ -1241,13 +1273,23 @@ if(regPassInput){
 function changeLanguage() {
   currentLang = document.getElementById('langSelect').value;
 
-  // Actualizar el título sobre el editor de código
-  const langName = currentLang === 'java' ? 'Java' : 'Python';
-  document.getElementById('editorLangLabel').textContent = `Editor de código — ${langName}`;
+  // Nombres bonitos para el título
+  const nombres = {
+      'python': 'Python', 'java': 'Java', 
+      'c': 'C', 'cpp': 'C++', 'csharp': 'C#'
+  };
+  document.getElementById('editorLangLabel').textContent = `Editor de código — ${nombres[currentLang]}`;
 
   if (codeEditor) {
-    codeEditor.setOption("mode", currentLang === 'java' ? "text/x-java" : "python");
-    // Al cambiar de lenguaje, recargamos todo el ejercicio para que se traduzcan las instrucciones
+    // Modos de CodeMirror para cada lenguaje
+    const modos = {
+        'python': 'python',
+        'java': 'text/x-java',
+        'c': 'text/x-csrc',
+        'cpp': 'text/x-c++src',
+        'csharp': 'text/x-csharp'
+    };
+    codeEditor.setOption("mode", modos[currentLang]);
     loadExercise(currentLevelIdx, currentExerciseIdx);
   }
 }
