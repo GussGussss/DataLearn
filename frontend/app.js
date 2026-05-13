@@ -1209,23 +1209,31 @@ function formatEnunciado(texto, lang) {
 function loadExercise(li, ei) {
   const nivel = TOPICS[currentLesson].niveles[li], ej = nivel.ejercicios[ei];
   document.getElementById('exerciseLevelTitle').textContent = `${nivel.titulo} — ${ej.nombre}`;
-
   document.getElementById('exercisePromptText').textContent = formatEnunciado(ej.enunciado, currentLang);
 
   const nombres = {'python': 'Python', 'java': 'Java', 'c': 'C', 'cpp': 'C++', 'csharp': 'C#'};
   document.getElementById('editorLangLabel').textContent = `Editor de código — ${nombres[currentLang]}`;
 
-  // Buscar el starter dinámicamente
-  let starterCode = ej.starter; // default Python
+  let starterCode = ej.starter; 
   if (currentLang === 'java' && ej.starter_java) starterCode = ej.starter_java;
   if (currentLang === 'c' && ej.starter_c) starterCode = ej.starter_c;
   if (currentLang === 'cpp' && ej.starter_cpp) starterCode = ej.starter_cpp;
   if (currentLang === 'csharp' && ej.starter_csharp) starterCode = ej.starter_csharp;
 
+  // 1. Buscar si el alumno ya había escrito algo en este ejercicio
+  const savedCodeKey = `dl_code_${currentUser}_${currentLesson}_${li}_${ei}_${currentLang}`;
+  const savedCode = localStorage.getItem(savedCodeKey);
+
   if (codeEditor) {
-    codeEditor.setValue(starterCode);
+    // Si hay código guardado, lo pone. Si no, pone la plantilla limpia.
+    codeEditor.setValue(savedCode || starterCode);
+    
+    // 2. EL ANTÍDOTO: Esperamos 100 milisegundos a que la pestaña sea visible y lo redibujamos
+    setTimeout(() => {
+        codeEditor.refresh();
+    }, 100);
   } else {
-    document.getElementById('codeInput').value = starterCode;
+    document.getElementById('codeInput').value = savedCode || starterCode;
   }
 
   document.getElementById('feedbackBox').style.display = 'none';
