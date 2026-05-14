@@ -1242,15 +1242,28 @@ function loadExercise(li, ei) {
   if (currentLang === 'cpp' && ej.starter_cpp) starterCode = ej.starter_cpp;
   if (currentLang === 'csharp' && ej.starter_csharp) starterCode = ej.starter_csharp;
 
+  // ── NUEVO: INYECTOR DINÁMICO DE COMENTARIOS ──
+  const mensajePython = "# ↓ Escribe tu lógica a partir de aquí ↓";
+  const mensajeC = "// ↓ Escribe tu lógica a partir de aquí ↓";
+
+  if (currentLang === 'python') {
+      // En Python buscamos la palabra 'pass' y le ponemos la flecha arriba
+      starterCode = starterCode.replace('pass', mensajePython + '\n    pass');
+  } else {
+      // En los demás, buscamos el primer comentario (//) y le inyectamos la flecha debajo
+      starterCode = starterCode.replace(/(\/\/.*)/, '$1\n        ' + mensajeC);
+  }
+  // ─────────────────────────────────────────────
+
   // 1. Buscar si el alumno ya había escrito algo en este ejercicio
   const savedCodeKey = `dl_code_${currentUser}_${currentLesson}_${li}_${ei}_${currentLang}`;
   const savedCode = localStorage.getItem(savedCodeKey);
 
   if (codeEditor) {
-    // Si hay código guardado, lo pone. Si no, pone la plantilla limpia.
+    // Si hay código guardado, lo pone. Si no, pone la plantilla limpia con nuestro nuevo comentario.
     codeEditor.setValue(savedCode || starterCode);
     
-    // 2. EL ANTÍDOTO: Esperamos 100 milisegundos a que la pestaña sea visible y lo redibujamos
+    // 2. EL ANTÍDOTO para que cargue bien alineado
     setTimeout(() => {
         codeEditor.refresh();
     }, 100);
