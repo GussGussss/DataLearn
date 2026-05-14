@@ -1808,3 +1808,27 @@ async function openAdminPanel() {
         tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#fca5a5;">Error de conexión.</td></tr>`;
     }
 }
+
+function procesarImagen(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 150; // Tamaño miniatura
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Exportamos como JPEG con calidad baja (0.6) para que pese nada
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
+            };
+        };
+    });
+}
