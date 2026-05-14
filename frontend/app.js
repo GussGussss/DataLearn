@@ -654,6 +654,8 @@ let panelVisible       = false;
 let nextLessonKey      = 'matrices';
 let codeEditor         = null; // Instancia de CodeMirror
 let currentLang        = 'python';
+let avatarBase64Temporal = null;
+
 // ── CONFIGURACIÓN DE SANDBOX (JUDGE0) ──
 const RAPIDAPI_KEY = "48cb767258mshe31ba7707230472p189547jsned41c3aa765d"; // Tu clave de la captura
 const RAPIDAPI_HOST = "judge0-ce.p.rapidapi.com";
@@ -818,6 +820,7 @@ function logout() {
 // ── NAVEGACIÓN ───────────────────────────────────────────────────────
 async function enterDashboard(user) {
   showScreen('dashboardScreen');
+  setSidebarCollapsed(true);
   document.getElementById('navUsername').textContent = user;
   document.getElementById('navAvatar').textContent = user[0].toUpperCase();
   document.getElementById('welcomeName').textContent = user;
