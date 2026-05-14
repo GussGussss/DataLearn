@@ -696,7 +696,8 @@ async function handleRegister() {
     if (data.exito) { 
       errBox.style.display='none'; showToast(data.mensaje); 
       currentUser=data.usuario.username; 
-      localStorage.setItem('dl_currentUser', currentUser); // <-- GUARDAMOS SESIÓN
+      localStorage.setItem('dl_currentUser', currentUser); 
+      localStorage.setItem('dl_userRole', data.usuario.rol);
       setTimeout(()=>enterDashboard(currentUser),800); 
     }
     else { errBox.textContent=data.mensaje; errBox.style.display='block'; }
@@ -769,10 +770,7 @@ async function handleResetPassword() {
 
 // ── AUTENTICACIÓN CON GOOGLE ──
 async function handleGoogleLogin(response) {
-  // Google nos manda el JWT (JSON Web Token) en la variable response.credential
   const googleToken = response.credential;
-  
-  // Usaremos la caja de error del login por si falla la conexión
   const errBox = document.getElementById('loginError'); 
   
   try {
@@ -790,8 +788,8 @@ async function handleGoogleLogin(response) {
       
       currentUser = data.usuario.username;
       localStorage.setItem('dl_currentUser', currentUser); 
+      localStorage.setItem('dl_userRole', data.usuario.rol); // ── NUEVO: Guardar rol de Google
       
-      // Enviamos al usuario al Dashboard
       setTimeout(() => enterDashboard(currentUser), 800);
     } else {
       errBox.textContent = data.mensaje;
@@ -802,13 +800,14 @@ async function handleGoogleLogin(response) {
     errBox.style.display = 'block';
   }
 }
-
 function logout() {
   currentUser=null; 
   progressCache={};
-  localStorage.removeItem('dl_currentUser'); // <-- DESTRUIMOS SESIÓN
+  localStorage.removeItem('dl_currentUser'); 
   localStorage.removeItem('dl_currentView');
   localStorage.removeItem('dl_currentLesson');
+  localStorage.removeItem('dl_userRole'); 
+  
   setSidebarCollapsed(false); 
   hideLessonPanel();
   showScreen('loginScreen');
