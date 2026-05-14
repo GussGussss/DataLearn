@@ -496,8 +496,22 @@
       <div class="view" id="adminView">
         <div class="progress-header">
           <h2>Panel Docente</h2>
-          <p>Alumnos registrados en el sistema.</p>
+          <p>Supervisa el desempeño global y los alumnos registrados en el sistema.</p>
         </div>
+        
+        <div class="stats-grid" style="margin-bottom: 24px; grid-template-columns: repeat(2, 1fr);">
+          <div class="stat-card green">
+            <div class="stat-label">Total de Estudiantes</div>
+            <div class="stat-value" id="adminTotalUsers">0</div>
+            <div class="stat-sub">Registrados en la plataforma</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">Estudiantes Activos</div>
+            <div class="stat-value" id="adminActiveUsers">0</div>
+            <div class="stat-sub">Que usan Google o Cuenta Local</div>
+          </div>
+        </div>
+
         <div class="admin-table-container">
           <table class="admin-table">
             <thead>
@@ -513,7 +527,7 @@
           </table>
         </div>
       </div>
-
+      
       <div class="view" id="settingsView">
         <div class="progress-header">
           <h2>Ajustes</h2>

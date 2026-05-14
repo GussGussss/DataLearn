@@ -1619,11 +1619,15 @@ function clearCode() {
 
 // ── UTILIDADES ───────────────────────────────────────────────────────
 function showToast(msg) {
-  // Verificamos si el usuario apagó las notificaciones
+  // ── NUEVO: SISTEMA DE SILENCIO (NOTIFICACIONES) ──
   const notifToggle = document.getElementById('notifToggle');
-  if (notifToggle && !notifToggle.checked) {
-      return; // Abortamos, el usuario quiere silencio
+  
+  // Si el usuario apagó el switch, abortamos la misión y no mostramos nada
+  // Excepción: Los mensajes de Error y de "¡Cuenta Creada!" siempre se muestran por seguridad.
+  if (notifToggle && !notifToggle.checked && !msg.toLowerCase().includes('error') && !msg.includes('creada') && !msg.includes('cerrada')) {
+      return; 
   }
+  // ────────────────────────────────────────────────
 
   const t = document.getElementById('toast');
   t.textContent = msg; 
@@ -1631,20 +1635,28 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// Y para que el switch recuerde su estado al recargar:
+// Cuando carga la página, inicializa el tema, notificaciones y revisa si hay alguien logueado
 document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    checkSession();
-    
-    // Restaurar estado del switch
-    const toggle = document.getElementById('notifToggle');
-    if (toggle) {
-        const savedState = localStorage.getItem('dl_notifs');
-        if (savedState !== null) toggle.checked = savedState === 'true';
-        toggle.addEventListener('change', (e) => {
-            localStorage.setItem('dl_notifs', e.target.checked);
-        });
-    }
+  initTheme();
+  
+  // ── NUEVO: MEMORIA DEL SWITCH DE NOTIFICACIONES ──
+  const toggle = document.getElementById('notifToggle');
+  if (toggle) {
+      // 1. Leemos si el usuario lo había apagado antes (por defecto es "true" / encendido)
+      const savedState = localStorage.getItem('dl_notifs');
+      if (savedState !== null) {
+          toggle.checked = savedState === 'true';
+      }
+      
+      // 2. Si el usuario le da click, lo guardamos para el futuro
+      toggle.addEventListener('change', (e) => {
+          localStorage.setItem('dl_notifs', e.target.checked);
+          if (e.target.checked) showToast('Notificaciones activadas.');
+      });
+  }
+  // ─────────────────────────────────────────────────
+  
+  checkSession();
 });
 
 document.addEventListener('keydown',e=>{
@@ -1881,7 +1893,17 @@ async function openAdminPanel() {
         
         if (data.exito) {
             tbody.innerHTML = '';
-            if (data.alumnos.length === 0) {
+            
+            // ── NUEVO: LLENAR LAS TARJETAS DE ESTADÍSTICAS ──
+            const totalAlumnos = data.alumnos.length;
+            document.getElementById('adminTotalUsers').textContent = totalAlumnos;
+            
+            const googleUsers = data.alumnos.filter(a => a.auth_provider === 'google').length;
+            const locales = totalAlumnos - googleUsers;
+            document.getElementById('adminActiveUsers').textContent = `${locales} Locales / ${googleUsers} Google`;
+            // ──────────────────────────────────────────────
+
+            if (totalAlumnos === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay alumnos registrados aún.</td></tr>';
                 return;
             }
