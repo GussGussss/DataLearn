@@ -1753,3 +1753,41 @@ function downloadCertificate() {
   doc.save(`Certificado_DataLearn_${currentUser}.pdf`);
   showToast("¡Certificado generado y descargado!");
 }
+
+// ── PANEL DOCENTE (ADMIN) ──
+async function openAdminPanel() {
+    showView('adminView');
+    const tbody = document.getElementById('adminTableBody');
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Cargando alumnos...</td></tr>';
+    
+    try {
+        const res = await fetch('../backend/autenticacion.php?accion=obtener_alumnos');
+        const data = await res.json();
+        
+        if (data.exito) {
+            tbody.innerHTML = '';
+            if (data.alumnos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No hay alumnos registrados aún.</td></tr>';
+                return;
+            }
+            
+            data.alumnos.forEach(alum => {
+                const badgeClass = alum.auth_provider === 'google' ? 'auth-google' : 'auth-local';
+                const providerText = alum.auth_provider || 'Local';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td>#${alum.id_usuario}</td>
+                        <td style="font-weight:bold;">${alum.nombre_usuario}</td>
+                        <td><span class="auth-badge ${badgeClass}">${providerText}</span></td>
+                        <td>${alum.fecha_registro}</td>
+                    </tr>
+                `;
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#fca5a5;">${data.mensaje}</td></tr>`;
+        }
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#fca5a5;">Error de conexión.</td></tr>`;
+    }
+}
