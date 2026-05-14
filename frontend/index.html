@@ -166,7 +166,7 @@
     <!-- Botón hamburguesa + Logo (ambos en el mismo bloque izquierdo) -->
     <div class="nav-left">
       <!-- Heurística #7: atajo para colapsar/expandir sidebar sin abandonar la vista -->
-      <button class="btn-icon-nav" id="tour-nav-btn" onclick="toggleSidebar()" title="Mostrar/ocultar menú">
+      <button class="btn-icon-nav" id="tour-nav-btn" onmouseenter="abrirSidebar()" onmouseleave="intentarCerrarSidebar()" title="Mostrar menú">
         <span id="icon-menu"></span>
       </button>
       <!-- Logo clickeable → Dashboard (Heurística #6: reconocimiento, convención web) -->
@@ -176,32 +176,42 @@
     </div>
 
     <div class="nav-user">
-      <button class="btn-icon-nav" onclick="toggleTheme()" title="Cambiar tema (Claro/Oscuro)">
-        <span id="icon-theme"></span>
-      </button>
-
       <div class="xp-badge" id="tour-xp-box" title="Tus puntos de experiencia">
         <span id="icon-fire"></span>
         <span id="userXP">0 XP</span>
       </div>
-      <div class="avatar" id="navAvatar">U</div>
-      <span class="username" id="navUsername">Usuario</span>
+
+      <div class="profile-dropdown">
+        <div class="profile-trigger">
+          <div class="avatar" id="navAvatar">U</div>
+          <span class="username" id="navUsername">Usuario</span>
+        </div>
+        
+        <div class="dropdown-menu">
+          <div class="dropdown-header">
+            <strong>Mi Cuenta</strong>
+          </div>
+          <a href="#" onclick="showView('settingsView'); return false;"><span class="icon">⛭</span> Ajustes</a>
+          <a href="#" class="text-danger" onclick="logout(); return false;"><span class="icon">➜</span> Salir</a>
+        </div>
+      </div>
+
     </div>
   </nav>
 
   <div class="dashboard-body">
 
     <!-- ══ SIDEBAR COLAPSABLE ══ -->
-    <aside class="sidebar" id="mainSidebar">
+    <aside class="sidebar collapsed" id="mainSidebar" onmouseenter="abrirSidebar()" onmouseleave="intentarCerrarSidebar()">
       <div class="sidebar-section-title">Navegación</div>
-      <div class="sidebar-item active" onclick="showView('homeView');setSidebarCollapsed(false);">
+      <div class="sidebar-item active" onclick="showView('homeView');setSidebarCollapsed(true);">
         <span class="icon">⊞</span> Dashboard
       </div>
-      <div class="sidebar-item" onclick="showView('progressView');setSidebarCollapsed(false);">
+      <div class="sidebar-item" onclick="showView('progressView');setSidebarCollapsed(true);">
         <span class="icon">◉</span> Mi Progreso
       </div>
 
-      <div class="sidebar-item" id="btnAdminPanel" style="display: none; color: #a5b4fc;" onclick="openAdminPanel();setSidebarCollapsed(false);">
+      <div class="sidebar-item" id="btnAdminPanel" style="display: none; color: #a5b4fc;" onclick="openAdminPanel();setSidebarCollapsed(true);">
         <span class="icon">⊚</span> Panel Docente
       </div>
 
@@ -479,10 +489,6 @@
         <div class="progress-list" id="progressList"></div>
       </div>
 
-      <div class="sidebar-item" onclick="showView('settingsView');setSidebarCollapsed(false);">
-        <span class="icon">⛭</span> Ajustes
-      </div>
-
       <div class="view" id="adminView">
         <div class="progress-header">
           <h2>Panel Docente</h2>
@@ -565,7 +571,7 @@
 
         </div>
       </div>
-      
+
     </main><!-- /mainContent -->
 
   </div><!-- /dashboard-body -->

@@ -649,7 +649,7 @@ let currentLesson      = null;
 let currentLevelIdx    = 0;
 let currentExerciseIdx = 0;
 let progressCache      = {};
-let sidebarCollapsed   = false;
+let sidebarCollapsed   = true;
 let panelVisible       = false;
 let nextLessonKey      = 'matrices';
 let codeEditor         = null; // Instancia de CodeMirror
@@ -982,7 +982,7 @@ function showScreen(id) {
 // Click en logo → dashboard (Heurística #6)
 function goToDashboard() {
   if (!currentUser) return;
-  setSidebarCollapsed(false); hideLessonPanel();
+  setSidebarCollapsed(true); hideLessonPanel();
   showView('homeView');
   document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
   document.querySelector('.sidebar-item').classList.add('active');
@@ -1027,6 +1027,21 @@ function setSidebarCollapsed(collapsed) {
   if (rail) rail.classList.toggle('visible', collapsed);
 }
 function toggleSidebar() { setSidebarCollapsed(!sidebarCollapsed); }
+
+// ── SISTEMA HOVER PARA EL MENÚ LATERAL ──
+let menuHoverTimer;
+
+function openMenuHover() {
+  clearTimeout(menuHoverTimer);      // Cancela el cierre si regresas el mouse
+  setSidebarCollapsed(false);        // Abre el menú
+}
+
+function closeMenuHover() {
+  // Le damos 300 milisegundos de "gracia" para mover el mouse sin que se cierre
+  menuHoverTimer = setTimeout(() => {
+    setSidebarCollapsed(true);       // Cierra el menú
+  }, 300);
+}
 
 // ── PANEL DERECHO (TIPO UDEMY) ───────────────────────────────────────
 function showLessonPanel() {
@@ -1100,7 +1115,7 @@ function openLesson(key, isRestoring = false) {
 }
 
 function backToHome() {
-  setSidebarCollapsed(false); hideLessonPanel();
+  setSidebarCollapsed(true); hideLessonPanel();
   showView('homeView');
   document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
   document.querySelector('.sidebar-item').classList.add('active');
@@ -1831,4 +1846,19 @@ function procesarImagen(file) {
             };
         };
     });
+}
+
+// ── LÓGICA DEL MENÚ LATERAL FLOTANTE (HOVER) ──
+let sidebarTimer;
+
+function abrirSidebar() {
+  clearTimeout(sidebarTimer); // Si el mouse regresa rápido, cancelamos el cierre
+  setSidebarCollapsed(false);
+}
+
+function intentarCerrarSidebar() {
+  // Le damos 300 milisegundos de "gracia" al usuario para mover el mouse
+  sidebarTimer = setTimeout(() => {
+    setSidebarCollapsed(true);
+  }, 300);
 }

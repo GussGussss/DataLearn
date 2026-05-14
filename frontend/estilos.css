@@ -244,14 +244,19 @@ body {
 
 /* ── SIDEBAR ── */
 .sidebar {
+  position: absolute; /* NUEVO: Hace que flote */
+  height: calc(100vh - 64px); /* NUEVO: Ocupa el alto desde el nav hacia abajo */
+  z-index: 90; /* NUEVO: Se pone por encima del texto */
+  box-shadow: 10px 0 30px rgba(0,0,0,0.6); /* NUEVO: Sombra elegante */
+  
   width: 260px; background: var(--surface);
   border-right: 1px solid var(--border);
   padding: 24px 16px; overflow-y: auto; flex-shrink: 0;
-  /* Transición suave de colapso */
   transition: width 0.28s cubic-bezier(0.4,0,0.2,1),
               opacity 0.22s ease,
               padding 0.28s ease;
 }
+
 /* Estado colapsado: sidebar desaparece sin ocupar espacio */
 .sidebar.collapsed {
   width: 0 !important;
@@ -1146,4 +1151,98 @@ input:checked + .slider:before { transform: translateX(20px); background-color: 
 @media (max-width: 600px) {
   .profile-edit-container { flex-direction: column; text-align: center; }
   .danger-actions { flex-direction: column; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MENÚ DESPLEGABLE DEL PERFIL (UDEMY STYLE)
+══════════════════════════════════════════════════════════════ */
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.profile-trigger:hover {
+  background: var(--surface2);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 130%; /* Empieza un poco más abajo para el efecto de entrada */
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 220px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Puente invisible para que el mouse no pierda el hover al bajar */
+.profile-dropdown::after {
+  content: '';
+  position: absolute;
+  height: 25px;
+  width: 100%;
+  bottom: -25px;
+  left: 0;
+}
+
+/* Activar el menú al pasar el cursor */
+.profile-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.dropdown-menu a {
+  padding: 14px 16px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background: var(--surface2);
+  color: var(--accent);
+}
+
+.dropdown-menu a.text-danger:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+/* Adaptación para modo claro */
+body.light-mode .dropdown-menu {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
