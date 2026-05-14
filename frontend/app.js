@@ -670,6 +670,11 @@ async function handleLogin() {
       errBox.style.display='none'; 
       currentUser=data.usuario.username; 
       localStorage.setItem('dl_currentUser', currentUser); // <-- GUARDAMOS SESIÓN
+      
+      // ── ESTA ES LA LÍNEA QUE FALTABA ──
+      localStorage.setItem('dl_userRole', data.usuario.rol); 
+      // ──────────────────────────────────
+      
       enterDashboard(currentUser); 
     }
     else { errBox.textContent=data.mensaje; errBox.style.display='block'; }
