@@ -814,9 +814,9 @@ function logout() {
 // ── NAVEGACIÓN ───────────────────────────────────────────────────────
 async function enterDashboard(user) {
   showScreen('dashboardScreen');
-  document.getElementById('navUsername').textContent=user;
-  document.getElementById('navAvatar').textContent=user[0].toUpperCase();
-  document.getElementById('welcomeName').textContent=user;
+  document.getElementById('navUsername').textContent = user;
+  document.getElementById('navAvatar').textContent = user[0].toUpperCase();
+  document.getElementById('welcomeName').textContent = user;
   
   // 1. Restaurar lenguaje preferido globalmente
   const savedLang = localStorage.getItem('dl_currentLang');
@@ -826,14 +826,29 @@ async function enterDashboard(user) {
       if (select) select.value = currentLang;
   }
 
+  // ── 2. LA MAGIA DEL ROL: Encender el panel si es profesor ──
+  const userRole = localStorage.getItem('dl_userRole');
+  const btnAdmin = document.getElementById('btnAdminPanel');
+  if (btnAdmin) {
+      if (userRole === 'profesor' || userRole === 'admin') {
+          btnAdmin.style.display = 'flex';
+      } else {
+          btnAdmin.style.display = 'none';
+      }
+  }
+  // ──────────────────────────────────────────────────────────
+
   await loadProgress();
+  
+  // Revisar si ya merece el certificado
+  if (typeof checkAndShowCertificate === 'function') {
+      checkAndShowCertificate(); 
+  }
 
   const savedView = localStorage.getItem('dl_currentView') || 'homeView';
   const savedLesson = localStorage.getItem('dl_currentLesson');
 
-  checkAndShowCertificate();
-
-  // 2. Restaurar estado exacto
+  // 3. Restaurar estado exacto (por si dio F5)
   if (savedView === 'lessonView' && savedLesson) {
       openLesson(savedLesson, true); 
   } else {
