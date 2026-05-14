@@ -1064,3 +1064,86 @@ body.light-mode .cert-info p { color: #4f46e5; }
 body.light-mode .admin-table tr:hover { background: rgba(2, 132, 199, 0.05); }
 body.light-mode .auth-local { background: #f1f5f9; color: #64748b; border-color: #e2e8f0; }
 body.light-mode .auth-google { background: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
+
+/* ══════════════════════════════════════════════════════════════
+   VISTA DE AJUSTES (SETTINGS)
+══════════════════════════════════════════════════════════════ */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 800px;
+}
+
+.settings-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+}
+
+.settings-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+
+.settings-card h3 .icon { color: var(--accent); }
+
+/* Perfil */
+.profile-edit-container { display: flex; align-items: center; gap: 24px; }
+.avatar-large {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  display: grid; place-items: center; font-size: 28px; font-weight: 700; color: white;
+  flex-shrink: 0; background-size: cover; background-position: center;
+}
+.profile-actions { flex: 1; }
+.btn-upload {
+  display: inline-block; padding: 10px 20px; font-size: 13px; text-align: center;
+  width: auto; cursor: pointer; border-radius: 8px; margin-bottom: 8px;
+}
+.upload-hint { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* Preferencias */
+.preference-row { display: flex; justify-content: space-between; align-items: center; }
+.pref-info strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 4px; }
+.pref-info span { font-size: 12px; color: var(--muted); }
+.btn-small { padding: 8px 16px; font-size: 12px; width: auto; }
+
+/* Switch (Toggle) */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--surface2); transition: .4s; border: 1px solid var(--border); }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: var(--muted); transition: .4s; }
+input:checked + .slider { background-color: rgba(16,185,129,0.2); border-color: var(--accent3); }
+input:checked + .slider:before { transform: translateX(20px); background-color: var(--accent3); }
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Zona de Peligro */
+.danger-zone { border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.02); }
+.danger-zone h3 .icon { color: var(--danger); }
+.danger-text { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.danger-actions { display: flex; gap: 16px; }
+
+.btn-logout-large {
+  flex: 1; padding: 12px; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;
+}
+.btn-logout-large:hover { border-color: var(--muted); }
+
+.btn-delete-account {
+  flex: 1; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s;
+}
+.btn-delete-account:hover { background: rgba(239, 68, 68, 0.2); color: #fecaca; }
+
+@media (max-width: 600px) {
+  .profile-edit-container { flex-direction: column; text-align: center; }
+  .danger-actions { flex-direction: column; }
+}

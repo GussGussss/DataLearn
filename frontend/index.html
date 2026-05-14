@@ -186,7 +186,6 @@
       </div>
       <div class="avatar" id="navAvatar">U</div>
       <span class="username" id="navUsername">Usuario</span>
-      <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
   </nav>
 
@@ -480,6 +479,10 @@
         <div class="progress-list" id="progressList"></div>
       </div>
 
+      <div class="sidebar-item" onclick="showView('settingsView');setSidebarCollapsed(false);">
+        <span class="icon">⛭</span> Ajustes
+      </div>
+
       <div class="view" id="adminView">
         <div class="progress-header">
           <h2>Panel Docente</h2>
@@ -501,6 +504,68 @@
         </div>
       </div>
 
+      <div class="view" id="settingsView">
+        <div class="progress-header">
+          <h2>Ajustes de Cuenta</h2>
+          <p>Personaliza tu perfil, preferencias y gestiona tu privacidad.</p>
+        </div>
+
+        <div class="settings-grid">
+          
+          <div class="settings-card">
+            <h3><span class="icon">♙</span> Perfil de Usuario</h3>
+            <div class="profile-edit-container">
+              <div class="avatar-large" id="settingsAvatarPreview">U</div>
+              <div class="profile-actions">
+                <label class="btn-primary btn-upload">
+                  Subir nueva foto
+                  <input type="file" id="avatarUpload" accept="image/jpeg, image/png" style="display: none;" onchange="procesarImagen(this)">
+                </label>
+                <p class="upload-hint">Formatos: JPG/PNG. Se optimizará automáticamente.</p>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 24px;">
+              <label>Biografía corta (Público)</label>
+              <input type="text" id="userBio" placeholder="Ej. Estudiante de Ingeniería de Software..." maxlength="150">
+            </div>
+            <button class="btn-secondary" onclick="guardarPerfil()" style="width: 100%; margin-top: 10px;">Guardar Cambios</button>
+          </div>
+
+          <div class="settings-card">
+            <h3><span class="icon">◧</span> Interfaz y Alertas</h3>
+            
+            <div class="preference-row">
+              <div class="pref-info">
+                <strong>Tema Visual</strong>
+                <span>Alternar entre modo claro y oscuro</span>
+              </div>
+              <button class="btn-secondary btn-small" onclick="toggleTheme()">Cambiar Tema</button>
+            </div>
+
+            <div class="preference-row" style="margin-top: 20px;">
+              <div class="pref-info">
+                <strong>Notificaciones In-App</strong>
+                <span>Alertas de rachas, XP y recordatorios</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="notifToggle" checked>
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-card danger-zone">
+            <h3><span class="icon">⚠</span> Zona de Peligro</h3>
+            <p class="danger-text">Estas acciones afectan directamente tu sesión y tus datos almacenados.</p>
+            <div class="danger-actions">
+              <button class="btn-logout-large" onclick="logout()">Cerrar Sesión</button>
+              <button class="btn-delete-account" onclick="confirmarBorrado()">Eliminar mi cuenta</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      
     </main><!-- /mainContent -->
 
   </div><!-- /dashboard-body -->
