@@ -1827,28 +1827,89 @@ async function openAdminPanel() {
     }
 }
 
-function procesarImagen(file) {
-    return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 150; // Tamaño miniatura
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
+// ── GESTIÓN DE PERFIL (CON SEGURIDAD UX) ──
+function procesarImagen(input) {
+    const file = input.files[0];
+    if (!file) return;
 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                // Exportamos como JPEG con calidad baja (0.6) para que pese nada
-                resolve(canvas.toDataURL('image/jpeg', 0.6));
-            };
+    // 1. SEGURIDAD FRONTEND: Validar tipo MIME real
+    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        showToast('Error: Solo se permiten imágenes JPG o PNG.');
+        input.value = ''; // Limpiar el input
+        return;
+    }
+    // 2. SEGURIDAD FRONTEND: Prevenir archivos gigantes (Máx 5MB)
+    if (file.size > 5 * 1024 * 1024) { 
+        showToast('Error: La imagen es demasiado pesada (Máx 5MB).');
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+            // 3. OPTIMIZACIÓN: Redimensionar en el cliente con Canvas
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 150; 
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH;
+            canvas.height = img.height * scaleSize;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Convertimos a base64 (calidad 0.8)
+            avatarBase64Temporal = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Mostrar vista previa en el círculo
+            const preview = document.getElementById('settingsAvatarPreview');
+            preview.style.backgroundImage = `url(${avatarBase64Temporal})`;
+            preview.textContent = ''; // Quitar la letra
+            showToast('Imagen lista. Dale a "Guardar Cambios".');
         };
-    });
+    };
+}
+
+async function guardarPerfil() {
+    const bioInput = document.getElementById('userBio').value;
+    const btn = document.querySelector('#set-profile .btn-secondary');
+    
+    btn.disabled = true;
+    btn.textContent = 'Guardando de forma segura...';
+
+    try {
+        const res = await fetch('../backend/perfil.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: currentUser,
+                avatarBase64: avatarBase64Temporal,
+                biografia: bioInput
+            })
+        });
+        
+        const data = await res.json();
+        
+        if (data.exito) {
+            showToast('¡Perfil actualizado correctamente!');
+            // Actualizamos el avatar miniatura de arriba a la derecha
+            if (data.ruta_foto) {
+                const navAvatar = document.getElementById('navAvatar');
+                navAvatar.style.backgroundImage = `url(../backend/${data.ruta_foto})`;
+                navAvatar.textContent = '';
+            }
+        } else {
+            showToast('Error: ' + data.mensaje);
+        }
+    } catch (e) {
+        showToast('Error de conexión con el servidor.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Guardar Cambios';
+    }
 }
 
 // ── LÓGICA DEL MENÚ LATERAL FLOTANTE (HOVER) ──
