@@ -801,19 +801,68 @@ async function handleGoogleLogin(response) {
     errBox.style.display = 'block';
   }
 }
-function logout() {
-  currentUser=null; 
-  progressCache={};
+
+// ── SISTEMA DE SALIDA Y ELIMINACIÓN DE CUENTA ──
+
+// Controles Modal Salir
+function abrirLogoutModal() { document.getElementById('logoutModal').classList.add('show'); }
+function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('show'); }
+
+// Cierre de sesión real
+function ejecutarLogout() {
+  closeLogoutModal();
+  currentUser = null; 
+  progressCache = {};
+  
+  // Limpiar memoria
   localStorage.removeItem('dl_currentUser'); 
   localStorage.removeItem('dl_currentView');
   localStorage.removeItem('dl_currentLesson');
   localStorage.removeItem('dl_userRole'); 
   
-  setSidebarCollapsed(false); 
+  setSidebarCollapsed(true); 
   hideLessonPanel();
   showScreen('loginScreen');
-  document.getElementById('loginUser').value='';
-  document.getElementById('loginPass').value='';
+  
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  showToast('Sesión cerrada correctamente.');
+}
+
+// Controles Modal Eliminar
+function confirmarBorrado() { document.getElementById('deleteModal').classList.add('show'); }
+function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('show'); }
+
+// Eliminación real en base de datos
+async function ejecutarBorrado() {
+  const btn = document.getElementById('btnConfirmDelete');
+  btn.disabled = true;
+  btn.textContent = 'Eliminando...';
+
+  try {
+      const res = await fetch('../backend/eliminar_cuenta.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: currentUser })
+      });
+      
+      const data = await res.json();
+      
+      if (data.exito) {
+          closeDeleteModal();
+          showToast('Tu cuenta ha sido eliminada. Adiós 😢');
+          // Esperamos 2 segundos para que el usuario lea el mensaje y luego cerramos sesión
+          setTimeout(() => ejecutarLogout(), 2000);
+      } else {
+          showToast('Error: ' + data.mensaje);
+          btn.disabled = false;
+          btn.textContent = 'Sí, eliminar para siempre';
+      }
+  } catch (e) {
+      showToast('Error de conexión con el servidor.');
+      btn.disabled = false;
+      btn.textContent = 'Sí, eliminar para siempre';
+  }
 }
 
 // ── NAVEGACIÓN ───────────────────────────────────────────────────────

@@ -196,7 +196,7 @@
           <a href="#" onclick="openSettings('set-profile'); return false;"><span class="icon">♙</span> Perfil público</a>
           <a href="#" onclick="openSettings('set-interface'); return false;"><span class="icon">◧</span> Interfaz y Notificaciones</a>
           <a href="#" onclick="openSettings('set-security'); return false;"><span class="icon">⚠</span> Seguridad de la cuenta</a>
-          <a href="#" class="text-danger" onclick="logout(); return false;"><span class="icon">➜</span> Cerrar Sesion</a>
+          <a href="#" class="text-danger" onclick="abrirLogoutModal(); return false;"><span class="icon">➜</span> Cerrar Sesión</a>
         </div>
       </div>
 
@@ -582,7 +582,7 @@
                 <p class="danger-text">Estas acciones afectan directamente tu sesión y tus datos almacenados.</p>
               </div>
               <div class="danger-actions">
-                <button class="btn-logout-large" onclick="logout()">Cerrar Sesión</button>
+                <button class="btn-logout-large" onclick="abrirLogoutModal()">Cerrar Sesión</button>
                 <button class="btn-delete-account" onclick="confirmarBorrado()">Eliminar mi cuenta</button>
               </div>
             </div>
@@ -630,6 +630,28 @@
     <div class="tour-actions" style="justify-content: flex-end; gap: 12px;">
       <button class="btn-clear" onclick="closeCropper()">Cancelar</button>
       <button class="btn-primary" onclick="applyCrop()" style="width: auto; margin: 0;">Aplicar Recorte</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="logoutModal">
+  <div class="modal-box" style="width: 400px; max-width: 95%;">
+    <h3 style="color: var(--text);"><span class="icon" style="color: var(--accent);">➜</span> ¿Cerrar sesión?</h3>
+    <p>Tendrás que volver a ingresar tus credenciales para continuar tu progreso.</p>
+    <div class="tour-actions" style="justify-content: flex-end; gap: 12px; margin-top: 24px;">
+      <button class="btn-clear" onclick="closeLogoutModal()">Cancelar</button>
+      <button class="btn-primary" onclick="ejecutarLogout()" style="width: auto; margin: 0;">Sí, cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box" style="width: 400px; max-width: 95%; border: 1px solid var(--danger);">
+    <h3 style="color: var(--danger);"><span class="icon">⚠</span> Eliminar cuenta</h3>
+    <p>Esta acción es <strong>irreversible</strong>. Perderás todo tu progreso, certificados y experiencia (XP). ¿Estás absolutamente seguro?</p>
+    <div class="tour-actions" style="justify-content: flex-end; gap: 12px; margin-top: 24px;">
+      <button class="btn-clear" onclick="closeDeleteModal()">Cancelar</button>
+      <button class="btn-delete-account" id="btnConfirmDelete" onclick="ejecutarBorrado()" style="width: auto; margin: 0; padding: 10px 20px;">Sí, eliminar para siempre</button>
     </div>
   </div>
 </div>
