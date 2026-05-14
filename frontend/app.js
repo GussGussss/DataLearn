@@ -821,9 +821,33 @@ function logout() {
 async function enterDashboard(user) {
   showScreen('dashboardScreen');
   setSidebarCollapsed(true);
+  
   document.getElementById('navUsername').textContent = user;
-  document.getElementById('navAvatar').textContent = user[0].toUpperCase();
   document.getElementById('welcomeName').textContent = user;
+  
+  // ── NUEVO: RECUPERAR FOTO AL INICIAR/RECARGAR ──
+  const savedAvatar = localStorage.getItem('dl_avatar_' + user);
+  const navAvatar = document.getElementById('navAvatar');
+  const settingsAvatar = document.getElementById('settingsAvatarPreview');
+
+  if (savedAvatar) {
+      // Si tiene foto, la ponemos en la barra (arriba a la derecha) y en los ajustes
+      navAvatar.style.backgroundImage = `url(${savedAvatar})`;
+      navAvatar.textContent = '';
+      if (settingsAvatar) {
+          settingsAvatar.style.backgroundImage = `url(${savedAvatar})`;
+          settingsAvatar.textContent = '';
+      }
+  } else {
+      // Si no tiene foto guardada, le ponemos la primera letra de su nombre
+      navAvatar.style.backgroundImage = 'none';
+      navAvatar.textContent = user[0].toUpperCase();
+      if (settingsAvatar) {
+          settingsAvatar.style.backgroundImage = 'none';
+          settingsAvatar.textContent = user[0].toUpperCase();
+      }
+  }
+  // ────────────────────────────────────────────────
   
   // 1. Restaurar lenguaje preferido globalmente
   const savedLang = localStorage.getItem('dl_currentLang');
@@ -1828,17 +1852,18 @@ async function openAdminPanel() {
 }
 
 // ── GESTIÓN DE PERFIL (CON SEGURIDAD UX) ──
+let avatarBase64Temporal = null;
+let cropperInstance = null; // Guardamos el recortador
+
 function procesarImagen(input) {
     const file = input.files[0];
     if (!file) return;
 
-    // 1. SEGURIDAD FRONTEND: Validar tipo MIME real
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
         showToast('Error: Solo se permiten imágenes JPG o PNG.');
-        input.value = ''; // Limpiar el input
+        input.value = '';
         return;
     }
-    // 2. SEGURIDAD FRONTEND: Prevenir archivos gigantes (Máx 5MB)
     if (file.size > 5 * 1024 * 1024) { 
         showToast('Error: La imagen es demasiado pesada (Máx 5MB).');
         input.value = '';
@@ -1846,31 +1871,60 @@ function procesarImagen(input) {
     }
 
     const reader = new FileReader();
-    reader.readAsDataURL(file);
     reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-            // 3. OPTIMIZACIÓN: Redimensionar en el cliente con Canvas
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 150; 
-            const scaleSize = MAX_WIDTH / img.width;
-            canvas.width = MAX_WIDTH;
-            canvas.height = img.height * scaleSize;
+        // En lugar de encogerla directo, abrimos el modal de recorte
+        const imgNode = document.getElementById('imageToCrop');
+        imgNode.src = event.target.result;
+        
+        document.getElementById('cropperModal').classList.add('show');
 
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            // Convertimos a base64 (calidad 0.8)
-            avatarBase64Temporal = canvas.toDataURL('image/jpeg', 0.8);
-            
-            // Mostrar vista previa en el círculo
-            const preview = document.getElementById('settingsAvatarPreview');
-            preview.style.backgroundImage = `url(${avatarBase64Temporal})`;
-            preview.textContent = ''; // Quitar la letra
-            showToast('Imagen lista. Dale a "Guardar Cambios".');
-        };
+        // Si había un recortador viejo, lo destruimos
+        if (cropperInstance) { cropperInstance.destroy(); }
+
+        // Inicializamos el nuevo recortador
+        cropperInstance = new Cropper(imgNode, {
+            aspectRatio: 1, // Obliga a que el recorte sea un cuadrado perfecto
+            viewMode: 1,    // Restringe el cuadro dentro del área
+            dragMode: 'move', // Permite arrastrar la imagen
+            background: false, // Quita el fondo de cuadritos por defecto
+            autoCropArea: 0.8 // Inicia ocupando el 80% de la imagen
+        });
     };
+    reader.readAsDataURL(file);
+    
+    // Reseteamos el input por si el usuario cancela y quiere elegir la misma foto
+    input.value = ''; 
+}
+
+function closeCropper() {
+    document.getElementById('cropperModal').classList.remove('show');
+    if (cropperInstance) { 
+        cropperInstance.destroy(); 
+        cropperInstance = null; 
+    }
+}
+
+function applyCrop() {
+    if (!cropperInstance) return;
+    
+    // La librería nos entrega el pedacito exacto, ya encogido a 150x150 px
+    const canvas = cropperInstance.getCroppedCanvas({
+        width: 150,
+        height: 150
+    });
+
+    // Lo convertimos a texto para guardarlo
+    avatarBase64Temporal = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // Actualizamos la vista previa en los Ajustes
+    const preview = document.getElementById('settingsAvatarPreview');
+    if (preview) {
+        preview.style.backgroundImage = `url(${avatarBase64Temporal})`;
+        preview.textContent = ''; 
+    }
+    
+    closeCropper();
+    showToast('Recorte aplicado. Dale a "Guardar Cambios".');
 }
 
 async function guardarPerfil() {
@@ -1895,11 +1949,16 @@ async function guardarPerfil() {
         
         if (data.exito) {
             showToast('¡Perfil actualizado correctamente!');
-            // Actualizamos el avatar miniatura de arriba a la derecha
+            
+            // Actualizamos el avatar miniatura y lo guardamos en memoria
             if (data.ruta_foto) {
+                const rutaFinal = `../backend/${data.ruta_foto}`;
                 const navAvatar = document.getElementById('navAvatar');
-                navAvatar.style.backgroundImage = `url(../backend/${data.ruta_foto})`;
+                navAvatar.style.backgroundImage = `url(${rutaFinal})`;
                 navAvatar.textContent = '';
+                
+                // MAGIA: Guardar la ruta para que sobreviva al F5
+                localStorage.setItem('dl_avatar_' + currentUser, rutaFinal);
             }
         } else {
             showToast('Error: ' + data.mensaje);
