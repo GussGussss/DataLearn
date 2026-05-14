@@ -850,7 +850,7 @@ async function ejecutarBorrado() {
       
       if (data.exito) {
           closeDeleteModal();
-          showToast('Tu cuenta ha sido eliminada. Adiós 😢');
+          showToast('Tu cuenta ha sido eliminada.');
           // Esperamos 2 segundos para que el usuario lea el mensaje y luego cerramos sesión
           setTimeout(() => ejecutarLogout(), 2000);
       } else {
@@ -1619,10 +1619,33 @@ function clearCode() {
 
 // ── UTILIDADES ───────────────────────────────────────────────────────
 function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  // Verificamos si el usuario apagó las notificaciones
+  const notifToggle = document.getElementById('notifToggle');
+  if (notifToggle && !notifToggle.checked) {
+      return; // Abortamos, el usuario quiere silencio
+  }
+
+  const t = document.getElementById('toast');
+  t.textContent = msg; 
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// Y para que el switch recuerde su estado al recargar:
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    checkSession();
+    
+    // Restaurar estado del switch
+    const toggle = document.getElementById('notifToggle');
+    if (toggle) {
+        const savedState = localStorage.getItem('dl_notifs');
+        if (savedState !== null) toggle.checked = savedState === 'true';
+        toggle.addEventListener('change', (e) => {
+            localStorage.setItem('dl_notifs', e.target.checked);
+        });
+    }
+});
 
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.ctrlKey&&!e.metaKey){
