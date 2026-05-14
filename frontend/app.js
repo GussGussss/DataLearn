@@ -1862,3 +1862,28 @@ function intentarCerrarSidebar() {
     setSidebarCollapsed(true);
   }, 300);
 }
+
+// ── LÓGICA DE LA VISTA DE AJUSTES (UDEMY STYLE) ──
+function openSettings(tabId = 'set-profile') {
+  showView('settingsView');
+  
+  // Buscar el botón lateral que corresponde a esta pestaña y activarlo
+  const btns = document.querySelectorAll('.set-menu-item');
+  btns.forEach(b => {
+    if (b.getAttribute('onclick').includes(tabId)) {
+      switchSettingsTab(tabId, b);
+    }
+  });
+}
+
+function switchSettingsTab(tabId, btnElement) {
+  // Ocultar todos los contenidos de las pestañas
+  document.querySelectorAll('.set-tab-content').forEach(t => t.classList.remove('active'));
+  // Quitar la clase active de todos los botones laterales
+  document.querySelectorAll('.set-menu-item').forEach(b => b.classList.remove('active'));
+  
+  // Mostrar la pestaña seleccionada
+  document.getElementById(tabId).classList.add('active');
+  // Iluminar el botón seleccionado
+  if (btnElement) btnElement.classList.add('active');
+}
