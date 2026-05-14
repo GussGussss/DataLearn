@@ -654,7 +654,6 @@ let panelVisible       = false;
 let nextLessonKey      = 'matrices';
 let codeEditor         = null; // Instancia de CodeMirror
 let currentLang        = 'python';
-let avatarBase64Temporal = null;
 
 // ── CONFIGURACIÓN DE SANDBOX (JUDGE0) ──
 const RAPIDAPI_KEY = "48cb767258mshe31ba7707230472p189547jsned41c3aa765d"; // Tu clave de la captura
@@ -1054,21 +1053,6 @@ function setSidebarCollapsed(collapsed) {
   if (rail) rail.classList.toggle('visible', collapsed);
 }
 function toggleSidebar() { setSidebarCollapsed(!sidebarCollapsed); }
-
-// ── SISTEMA HOVER PARA EL MENÚ LATERAL ──
-let menuHoverTimer;
-
-function openMenuHover() {
-  clearTimeout(menuHoverTimer);      // Cancela el cierre si regresas el mouse
-  setSidebarCollapsed(false);        // Abre el menú
-}
-
-function closeMenuHover() {
-  // Le damos 300 milisegundos de "gracia" para mover el mouse sin que se cierre
-  menuHoverTimer = setTimeout(() => {
-    setSidebarCollapsed(true);       // Cierra el menú
-  }, 300);
-}
 
 // ── PANEL DERECHO (TIPO UDEMY) ───────────────────────────────────────
 function showLessonPanel() {
