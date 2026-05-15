@@ -85,7 +85,7 @@
         <input type="password" id="regPass" placeholder="Crea una contraseña segura" autocomplete="new-password"/>
         <span class="toggle-password" onclick="togglePasswordVisibility('regPass',this)"></span>
       </div>
-      <ul class="password-rules" id="passwordRules">
+      <ul class="password-rules" id="passwordRulesReg">
         <li id="rule-length"><span class="rule-icon">○</span> Mínimo 8 caracteres</li>
         <li id="rule-upper"><span class="rule-icon">○</span> Una letra mayúscula</li>
         <li id="rule-lower"><span class="rule-icon">○</span> Una letra minúscula</li>
@@ -144,6 +144,13 @@
         <input type="password" id="forgotPass" placeholder="Escribe tu nueva contraseña segura"/>
         <span class="toggle-password" onclick="togglePasswordVisibility('forgotPass',this)"></span>
       </div>
+      <ul class="password-rules" id="passwordRulesForgot">
+        <li id="rule-length-forgot"><span class="rule-icon">○</span> Mínimo 8 caracteres</li>
+        <li id="rule-upper-forgot"><span class="rule-icon">○</span> Una letra mayúscula</li>
+        <li id="rule-lower-forgot"><span class="rule-icon">○</span> Una letra minúscula</li>
+        <li id="rule-number-forgot"><span class="rule-icon">○</span> Un número</li>
+        <li id="rule-special-forgot"><span class="rule-icon">○</span> Un carácter especial (!@#$%^&*_)</li>
+      </ul>
     </div>
 
     <div class="form-group">

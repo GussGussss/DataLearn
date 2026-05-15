@@ -88,12 +88,6 @@ function initTheme() {
   }
 }
 
-// Cuando carga la página, inicializa el tema y revisa si hay alguien logueado
-document.addEventListener('DOMContentLoaded', () => {
-  initTheme();
-  checkSession();
-});
-
 function checkSession() {
   const savedUser = localStorage.getItem('dl_currentUser');
   if (savedUser) {
@@ -688,7 +682,7 @@ async function handleRegister() {
   const errBox=document.getElementById('registerError'), btn=document.getElementById('btnRegister');
   if (!user||user.trim()==='') { errBox.textContent='Elige un nombre de usuario.'; errBox.style.display='block'; return; }
   if (pass!==pass2) { errBox.textContent='Las contraseñas no coinciden.'; errBox.style.display='block'; return; }
-  const ok=pass.length>=8&&/[A-Z]/.test(pass)&&/[a-z]/.test(pass)&&/[0-9]/.test(pass)&&/[!@#$%^&*(),.?":{}|<>]/.test(pass);
+  const ok=pass.length>=8&&/[A-Z]/.test(pass)&&/[a-z]/.test(pass)&&/[0-9]/.test(pass)&&/[!@#$%^&*(),.?":{}|<>\-_]/.test(pass);
   if (!ok) { errBox.textContent='La contraseña no cumple los requisitos.'; errBox.style.display='block'; return; }
   btn.disabled=true; btn.textContent='Creando cuenta...'; btn.style.opacity='0.7';
   try {
@@ -728,7 +722,7 @@ async function handleResetPassword() {
   }
   
   // Validamos que la nueva contraseña sea fuerte
-  const ok = pass.length>=8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass) && /[!@#$%^&*(),.?":{}|<>]/.test(pass);
+  const ok = pass.length>=8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass) && /[!@#$%^&*(),.?":{}|<>\-_]/.test(pass);
   if (!ok) { 
     errBox.textContent = 'La contraseña no cumple los requisitos de seguridad (Mínimo 8 caracteres, mayúscula, minúscula, número y especial).'; 
     errBox.style.display = 'block'; 
@@ -1654,8 +1648,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (e.target.checked) showToast('Notificaciones activadas.');
       });
   }
-  // ─────────────────────────────────────────────────
-  
+
   checkSession();
 });
 
@@ -1677,18 +1670,47 @@ function togglePasswordVisibility(inputId,iconEl){
   else{input.type='password';iconEl.innerHTML=ICONS.eye;}
 }
 
-const regPassInput=document.getElementById('regPass'), passRules=document.getElementById('passwordRules');
-const iconV=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-if(regPassInput){
-  regPassInput.addEventListener('input',function(){
-    const v=this.value; passRules.style.display=v.length>0?'block':'none';
-    [['rule-length',v.length>=8],['rule-upper',/[A-Z]/.test(v)],['rule-lower',/[a-z]/.test(v)],['rule-number',/[0-9]/.test(v)],['rule-special',/[!@#$%^&*(),.?":{}|<>]/.test(v)]].forEach(([id,ok])=>{
-      const li=document.getElementById(id),sp=li?.querySelector('.rule-icon');
-      if(!li||!sp) return;
-      if(ok){li.classList.add('valid');sp.innerHTML=iconV;}else{li.classList.remove('valid');sp.innerHTML='○';}
-    });
-  });
+// ── VALIDACIÓN VISUAL DE CONTRASEÑAS EN TIEMPO REAL ──
+const iconV = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+function setupPasswordValidation(inputId, rulesId, suffix) {
+    const passInput = document.getElementById(inputId);
+    const passRules = document.getElementById(rulesId);
+    
+    if (passInput && passRules) {
+        passInput.addEventListener('input', function() {
+            const v = this.value; 
+            passRules.style.display = v.length > 0 ? 'block' : 'none';
+            
+            // Validaciones (AQUÍ YA INCLUIMOS EL GUION BAJO \-_)
+            const checks = [
+                [`rule-length${suffix}`, v.length >= 8],
+                [`rule-upper${suffix}`, /[A-Z]/.test(v)],
+                [`rule-lower${suffix}`, /[a-z]/.test(v)],
+                [`rule-number${suffix}`, /[0-9]/.test(v)],
+                [`rule-special${suffix}`, /[!@#$%^&*(),.?":{}|<>\-_]/.test(v)]
+            ];
+
+            checks.forEach(([id, ok]) => {
+                const li = document.getElementById(id);
+                if (!li) return;
+                const sp = li.querySelector('.rule-icon');
+                if (ok) {
+                    li.classList.add('valid');
+                    sp.innerHTML = iconV;
+                } else {
+                    li.classList.remove('valid');
+                    sp.innerHTML = '○';
+                }
+            });
+        });
+    }
 }
+
+// Inicializamos la validación para ambas pantallas mágicamente
+setupPasswordValidation('regPass', 'passwordRulesReg', '');
+setupPasswordValidation('forgotPass', 'passwordRulesForgot', '-forgot');
+// ──────────────────────────────────────────────────────────
 
 function changeLanguage() {
   currentLang = document.getElementById('langSelect').value;
