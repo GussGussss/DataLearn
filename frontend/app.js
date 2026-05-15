@@ -2087,7 +2087,15 @@ function intentarCerrarSidebar() {
 }
 
 // ── LÓGICA DE LA VISTA DE AJUSTES (UDEMY STYLE) ──
+let vistaPreviaAjustes = 'homeView'; // Memoria de navegación
+
 function openSettings(tabId = 'set-profile') {
+  // 1. Guardamos la vista en la que está el usuario ANTES de abrir los ajustes
+  const vistaActual = document.querySelector('.view.active');
+  if (vistaActual && vistaActual.id !== 'settingsView') {
+      vistaPreviaAjustes = vistaActual.id;
+  }
+
   showView('settingsView');
   
   // Buscar el botón lateral que corresponde a esta pestaña y activarlo
@@ -2097,6 +2105,23 @@ function openSettings(tabId = 'set-profile') {
       switchSettingsTab(tabId, b);
     }
   });
+}
+
+// 2. La magia del botón "X" que regresa en el tiempo
+function closeSettings() {
+  showView(vistaPreviaAjustes);
+}
+
+function switchSettingsTab(tabId, btnElement) {
+  // Ocultar todos los contenidos de las pestañas
+  document.querySelectorAll('.set-tab-content').forEach(t => t.classList.remove('active'));
+  // Quitar la clase active de todos los botones laterales
+  document.querySelectorAll('.set-menu-item').forEach(b => b.classList.remove('active'));
+  
+  // Mostrar la pestaña seleccionada
+  document.getElementById(tabId).classList.add('active');
+  // Iluminar el botón seleccionado
+  if (btnElement) btnElement.classList.add('active');
 }
 
 function switchSettingsTab(tabId, btnElement) {

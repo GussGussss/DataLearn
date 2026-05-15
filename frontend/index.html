@@ -536,9 +536,13 @@
       </div>
       
       <div class="view" id="settingsView">
-        <div class="progress-header">
-          <h2>Ajustes</h2>
-          <p>Gestiona tu información y personaliza tu entorno de aprendizaje.</p>
+        
+        <div class="progress-header" style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h2>Ajustes</h2>
+            <p>Gestiona tu información y personaliza tu entorno de aprendizaje.</p>
+          </div>
+          <button class="ep-close-btn" style="width: 36px; height: 36px; font-size: 16px;" onclick="closeSettings()" title="Cerrar Ajustes">✕</button>
         </div>
 
         <div class="settings-layout">
@@ -546,6 +550,7 @@
             <div class="set-menu-item active" onclick="switchSettingsTab('set-profile', this)">Perfil público</div>
             <div class="set-menu-item" onclick="switchSettingsTab('set-interface', this)">Interfaz y Notificaciones</div>
             <div class="set-menu-item" onclick="switchSettingsTab('set-security', this)">Seguridad de la cuenta</div>
+            <div class="set-menu-item" style="color: #fca5a5;" onclick="switchSettingsTab('set-logout', this)">Cierre de sesión</div>
           </aside>
 
           <div class="settings-content">
@@ -599,12 +604,21 @@
 
             <div class="set-tab-content danger-zone" id="set-security">
               <div class="settings-card-header danger-header">
-                <h3><span class="icon">⚠</span> Peligro</h3>
-                <p class="danger-text">Estas acciones afectan directamente tu sesión y tus datos almacenados.</p>
+                <h3><span class="icon">⚠</span> Seguridad de la cuenta</h3>
+                <p class="danger-text">Esta acción es irreversible. Eliminará todos tus datos y progreso de la plataforma.</p>
+              </div>
+              <div class="danger-actions">
+                <button class="btn-delete-account" onclick="confirmarBorrado()">Eliminar mi cuenta para siempre</button>
+              </div>
+            </div>
+
+            <div class="set-tab-content" id="set-logout" style="padding: 24px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px;">
+              <div class="settings-card-header">
+                <h3><span class="icon" style="color: var(--muted);">➜</span> Cierre de sesión</h3>
+                <p style="color: var(--muted); font-size: 13px;">Finaliza tu sesión de forma segura en este dispositivo.</p>
               </div>
               <div class="danger-actions">
                 <button class="btn-logout-large" onclick="abrirLogoutModal()">Cerrar Sesión</button>
-                <button class="btn-delete-account" onclick="confirmarBorrado()">Eliminar mi cuenta</button>
               </div>
             </div>
 
