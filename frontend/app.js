@@ -674,7 +674,7 @@ async function handleLogin() {
     }
     else { errBox.textContent=data.mensaje; errBox.style.display='block'; }
   } catch { errBox.textContent='Error de conexión con el servidor.'; errBox.style.display='block'; }
-  finally { btn.disabled=false; btn.textContent='Iniciar sesión →'; btn.style.opacity='1'; }
+  finally { btn.disabled=false; btn.textContent='Iniciar sesión'; btn.style.opacity='1'; }
 }
 
 async function handleRegister() {
@@ -697,7 +697,7 @@ async function handleRegister() {
     }
     else { errBox.textContent=data.mensaje; errBox.style.display='block'; }
   } catch { errBox.textContent='Error de conexión.'; errBox.style.display='block'; }
-  finally { btn.disabled=false; btn.textContent='Registrarme →'; btn.style.opacity='1'; }
+  finally { btn.disabled=false; btn.textContent='Registrarme'; btn.style.opacity='1'; }
 }
 
 async function handleResetPassword() {
@@ -758,7 +758,7 @@ async function handleResetPassword() {
     errBox.style.display = 'block'; 
   } finally { 
     btn.disabled = false; 
-    btn.textContent = 'Restablecer Contraseña →'; 
+    btn.textContent = 'Restablecer Contraseña'; 
     btn.style.opacity = '1'; 
   }
 }
@@ -1444,7 +1444,7 @@ function updateContinueButton() {
   const label=document.getElementById('continueLabel'), btn=document.getElementById('continueBtn');
   if(!banner) return;
   if(!found){ banner.style.borderColor='var(--accent3)'; label.style.color='var(--accent3)'; label.textContent='¡Felicidades!'; title.textContent='Has completado todo el curso'; if(btn) btn.style.display='none'; }
-  else { const pct=getTopicProgress(nextLessonKey); banner.style.borderColor='var(--accent)'; label.style.color='var(--accent)'; label.textContent=pct===0?'Empieza tu primera lección':'Siguiente recomendada'; title.textContent=TOPICS[nextLessonKey].name; if(btn){btn.style.display='block';btn.textContent=pct===0?'Empezar →':'Continuar →';} }
+  else { const pct=getTopicProgress(nextLessonKey); banner.style.borderColor='var(--accent)'; label.style.color='var(--accent)'; label.textContent=pct===0?'Empieza tu primera lección':'Siguiente recomendada'; title.textContent=TOPICS[nextLessonKey].name; if(btn){btn.style.display='block';btn.textContent=pct===0?'Empezar':'Continuar';} }
 }
 
 function continueLesson() { openLesson(nextLessonKey); }
@@ -1558,7 +1558,7 @@ async function evaluateCode() {
       document.getElementById('fbTitle').textContent='¡Ejercicio completado!';
       document.getElementById('fbMessage').innerHTML= `<p>${data.mensaje}</p>` + htmlConsola + `
         <button class="btn-primary" onclick="advanceToNext()" style="margin-top: 24px; width: auto; padding: 10px 20px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-          Siguiente Ejercicio →
+          Siguiente Ejercicio
         </button>`;
       
       markExerciseDone(ej.id); 
