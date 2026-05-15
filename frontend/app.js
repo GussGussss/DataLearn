@@ -934,39 +934,38 @@ let pasosTourActual = [];
 let indiceTour = 0;
 let elementoResaltado = null;
 
-// Configuracion de los pasos para la pantalla Dashboard
+// Configuración de los pasos para la pantalla Dashboard
 const tourDashboard = [
-  { id: 'tour-nav-btn', titulo: 'Navegacion', texto: 'Usa este boton para ocultar el menu lateral y enfocar tu atencion en el contenido.' },
-  { id: 'tour-xp-box', titulo: 'Experiencia (XP)', texto: 'Aqui veras los puntos que ganas al ver videos de teoria y resolver ejercicios practicos.' },
-  { id: 'tour-card-matrices', titulo: 'Ruta recomendada', texto: 'Si es tu primera vez, te sugerimos iniciar dando clic en esta tarjeta para tu primera lección.' }
+  { id: 'tour-nav-btn', titulo: 'Menú Inteligente', texto: 'Pasa el cursor por aquí para desplegar el menú lateral flotante. Se ocultará solo para no estorbar tu aprendizaje.' },
+  { id: 'navAvatar', titulo: 'Ajustes y Perfil', texto: 'Desde aquí puedes personalizar tu foto, cambiar al modo oscuro y gestionar la seguridad de tu cuenta.' },
+  { id: 'tour-xp-box', titulo: 'Experiencia (XP)', texto: 'Acumula puntos resolviendo retos y viendo las clases. ¡Demuestra tu nivel!' },
+  { id: 'tour-card-matrices', titulo: 'Ruta recomendada', texto: 'Si es tu primera vez, te sugerimos dar clic en esta tarjeta para iniciar tu camino con Matrices.' }
 ];
 
-// Configuracion de los pasos para la pantalla de Leccion
+// Configuración de los pasos para la pantalla de Lección
 const tourLeccion = [
-  { id: 'btnTogglePanel', titulo: 'Lista de ejercicios', texto: 'Haz clic aqui para abrir el panel derecho y seleccionar un reto para resolver.' },
-  { id: 'langSelect', titulo: 'Lenguaje de programacion', texto: 'Puedes alternar entre Python y Java. Las instrucciones y la validacion se adaptaran automaticamente.' },
-  { id: 'tour-btn-run', titulo: 'Ejecución en la Nube', texto: 'Al presionar Ejecutar, tu codigo viajara a servidores reales. Veras el resultado de la terminal justo aqui abajo.' }
+  { id: 'btnTogglePanel', titulo: 'Panel de Retos', texto: 'Haz clic aquí para abrir o cerrar el panel lateral y elegir el ejercicio que deseas resolver.' },
+  { id: 'langSelect', titulo: 'Soporte Multilenguaje', texto: '¡No te limites! Resuelve el mismo reto en Python, Java, C, C++ o C#. El entorno y el autocompletado se adaptarán a ti.' },
+  { id: 'tour-btn-run', titulo: 'Ejecución en la Nube', texto: 'Tu código viajará a un servidor seguro (Sandbox) para ser compilado y evaluado al instante en una terminal real.' }
 ];
 
-
-// Configuracion para la pantalla de Mi Progreso
+// Configuración para la pantalla de Mi Progreso
 const tourProgreso = [
-  { id: 'overallPct', titulo: 'Avance General', texto: 'Aqui puedes ver el porcentaje total de completitud de todo el curso de estructuras de datos.' },
-  { id: 'progressList', titulo: 'Estado por Tema', texto: 'Este listado te muestra detalladamente que niveles has superado en cada estructura especifica.' }
+  { id: 'overallPct', titulo: 'Tu Avance Global', texto: 'Aquí se refleja todo tu esfuerzo. ¡Llega al 100% en todas las estructuras para obtener tu certificado oficial!' },
+  { id: 'progressList', titulo: 'Desglose por Niveles', texto: 'Analiza qué temas dominas por completo y en cuáles necesitas practicar un poco más.' }
 ];
 
-// Configuracion para la pestaña de Video
+// Configuración para la pestaña de Video
 const tourVideo = [
-  { id: 'tour-video-box', titulo: 'Contenido Multimedia', texto: 'Cada tema inicia con una explicacion en video. Te recomendamos verla completa antes de pasar a la practica.' },
-  { id: 'btnMarkVideo', titulo: 'Recompensas', texto: 'Al terminar de ver el video, marca esta casilla para obtener tus primeros 30 XP del tema.' }
+  { id: 'tour-video-box', titulo: 'Clase Magistral', texto: 'Te recomendamos ver la explicación teórica completa antes de saltar al código.' },
+  { id: 'btnMarkVideo', titulo: '¡Reclama tus puntos!', texto: 'Al terminar la clase, marca esta casilla para sumar tus primeros 30 XP de este tema.' }
 ];    
 
-// Configuracion para la pestaña de Teoria
+// Configuración para la pestaña de Teoría
 const tourTeoria = [
-  { id: 'theoryTitle', titulo: 'Conceptos', texto: 'Aqui encontraras la definicion formal y las caracteristicas tecnicas de la estructura de datos.' },
-  { id: 'theoryOps', titulo: 'Operaciones', texto: 'Repasa las funciones principales como insertar, eliminar o buscar, junto con su complejidad temporal.' }
+  { id: 'theoryTitle', titulo: 'Base de Conocimiento', texto: 'Si necesitas repasar rápido, aquí tienes las definiciones formales para consultas rápidas.' },
+  { id: 'theoryOps', titulo: 'Operaciones', texto: 'Memoriza estos datos de complejidad algorítmica, ¡son clave para las entrevistas técnicas!' }
 ];
-
 
 function iniciarTour(pasos, tourName) {
   // Si el usuario ya vio este tour especifico, no hacer nada
