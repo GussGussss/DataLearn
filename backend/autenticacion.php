@@ -163,4 +163,34 @@ function obtenerAlumnos($conexion) {
         echo json_encode(["exito" => false, "mensaje" => "Error al obtener lista."]);
     }
 }
+
+function restablecerPassword($conexion, $datos) {
+    $usuario = trim($datos['username']);
+    $nueva_contrasena = $datos['password'];
+
+    // Validar contraseña fuerte en backend (incluye guion bajo)
+    if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>\-_]).{8,}$/', $nueva_contrasena)) {
+        echo json_encode(["exito" => false, "mensaje" => "La contraseña no cumple con los requisitos."]);
+        return;
+    }
+
+    try {
+        $consulta_existe = $conexion->prepare("SELECT id_usuario FROM usuarios WHERE nombre_usuario = ?");
+        $consulta_existe->execute([$usuario]);
+        
+        if ($consulta_existe->rowCount() === 0) {
+            echo json_encode(["exito" => false, "mensaje" => "El usuario no existe."]);
+            return;
+        }
+
+        $contrasena_encriptada = password_hash($nueva_contrasena, PASSWORD_DEFAULT);
+        $consulta_update = $conexion->prepare("UPDATE usuarios SET contrasena_hash = ? WHERE nombre_usuario = ?");
+        $consulta_update->execute([$contrasena_encriptada, $usuario]);
+
+        echo json_encode(["exito" => true, "mensaje" => "Contraseña actualizada exitosamente."]);
+
+    } catch(PDOException $e) {
+        echo json_encode(["exito" => false, "mensaje" => "Error de base de datos."]);
+    }
+}
 ?>
