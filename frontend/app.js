@@ -1473,21 +1473,31 @@ async function evaluateCode() {
   const code = codeEditor ? codeEditor.getValue() : document.getElementById('codeInput').value;
   const fb = document.getElementById('feedbackBox');
   
-  // ── VALIDACIÓN UX: ¿El código está intacto? ──
-  // Ahora bloquea a los tramposos en los 5 lenguajes xd
-  let starterCode = ej?.starter || '';
-  if (currentLang === 'java' && ej?.starter_java) starterCode = ej.starter_java;
-  if (currentLang === 'c' && ej?.starter_c) starterCode = ej.starter_c;
-  if (currentLang === 'cpp' && ej?.starter_cpp) starterCode = ej.starter_cpp;
-  if (currentLang === 'csharp' && ej?.starter_csharp) starterCode = ej.starter_csharp;
+  // ── VALIDACIÓN UX: ¿El código está intacto? (ANTI-TRAMPAS) ──
+  let baseCode = ej?.starter || '';
+  if (currentLang === 'java' && ej?.starter_java) baseCode = ej.starter_java;
+  if (currentLang === 'c' && ej?.starter_c) baseCode = ej.starter_c;
+  if (currentLang === 'cpp' && ej?.starter_cpp) baseCode = ej.starter_cpp;
+  if (currentLang === 'csharp' && ej?.starter_csharp) baseCode = ej.starter_csharp;
 
-  if (code.trim() === starterCode.trim()) {
+  // SIMULAMOS EL MENSAJE INYECTADO PARA QUE LA COMPARACIÓN SEA EXACTA
+  const mensajePython = "# ↓ Escribe tu lógica a partir de aquí ↓";
+  const mensajeC = "// ↓ Escribe tu lógica a partir de aquí ↓";
+
+  if (currentLang === 'python') {
+      baseCode = baseCode.replace('pass', mensajePython + '\n    pass');
+  } else {
+      baseCode = baseCode.replace(/(\/\/.*)/, '$1\n        ' + mensajeC);
+  }
+
+  // Ahora sí, si el código del editor es idéntico a la plantilla con el mensaje, lo bloqueamos
+  if (code.trim() === baseCode.trim()) {
     fb.className = 'feedback-box'; 
     fb.style.display = 'block';
     document.getElementById('fbIcon').innerHTML = ICONS.compass; 
     document.getElementById('fbTitle').textContent = '¡Anímate a escribir!';
     document.getElementById('fbMessage').innerHTML = '<p>Parece que no has modificado la plantilla inicial. Escribe tu solución antes de ejecutar el código.</p>';
-    return; // Detenemos la ejecución aquí
+    return; // Detenemos la ejecución aquí y evitamos que haga trampa
   }
   // ──────────────────────────────────────────────
   
